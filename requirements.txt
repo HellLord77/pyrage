@@ -1,0 +1,14 @@
+tqdm
+urllib3
+requests
+
+dropbox
+ftputil
+GitPython
+py-gitea
+PyGithub
+python-gitlab
+minio
+paramiko
+smbprotocol
+webdavclient3

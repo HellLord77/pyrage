@@ -80,17 +80,20 @@ class File:
     md5: Optional[str] = None
 
     def __eq__(self, other):
-        if isinstance(other, File):
-            for prop in ("size", "md5"):
+        if isinstance(other, str):
+            return other == self.path
+        elif isinstance(other, File):
+            for field in ("size", "md5"):
                 # noinspection PyUnboundLocalVariable
                 if (
-                    (self_prop := getattr(self, prop)) is not None
-                    and (other_prop := getattr(other, prop)) is not None
-                    and self_prop != other_prop
+                    (value := getattr(self, field)) is not None
+                    and (other_value := getattr(other, field)) is not None
+                    and value != other_value
                 ):
                     return False
             return True
-        return NotImplemented
+        else:
+            return NotImplemented
 
     @staticmethod
     def stat(stat: Stat) -> dict[str, Optional[int | float]]:
