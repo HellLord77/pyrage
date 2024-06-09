@@ -14,7 +14,6 @@ from pyrage.config import SFTP_AUTO_ADD
 from pyrage.storage import Storage
 from pyrage.utils import File
 from pyrage.utils import Readable
-from pyrage.utils import Stat
 
 
 def _makedirs(sftp: SFTPClient, path: str):
@@ -55,7 +54,7 @@ class SFTPStorage(Storage):
                     paths.append(path)
                 else:
                     # noinspection PyTypeChecker
-                    self._add_file_list(File(relpath(path, cwd), **Stat.fields(attr)))
+                    self._add_file_list(File(relpath(path, cwd), **File.stat(attr)))
 
     def _get_file(self, file: File) -> Readable:
         return self._sftp.open(file.path, "rb")

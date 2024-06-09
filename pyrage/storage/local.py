@@ -6,7 +6,6 @@ from tempfile import TemporaryDirectory
 from pyrage.storage import Storage
 from pyrage.utils import File
 from pyrage.utils import Readable
-from pyrage.utils import Stat
 from pyrage.utils import WritableHash
 
 
@@ -26,11 +25,10 @@ class LocalStorage(Storage):
     def _update_file_list(self):
         for path in self._path.rglob("*"):
             if path.is_file():
-                # noinspection PyTypeChecker
                 self._add_file_list(
                     File(
                         path.relative_to(self._path).as_posix(),
-                        **Stat.fields(path.stat()),
+                        **File.stat(path.stat()),
                         md5=_get_md5(path)
                     )
                 )

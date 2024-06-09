@@ -9,7 +9,6 @@ from pyrage.config import FTP_INCLUDE_HIDDEN
 from pyrage.storage import Storage
 from pyrage.utils import File
 from pyrage.utils import Readable
-from pyrage.utils import Stat
 
 
 class _FTPPort(FTP):
@@ -51,7 +50,7 @@ class FTPStorage(Storage):
                 else:
                     # noinspection PyTypeChecker
                     self._add_file_list(
-                        File(relpath(path, cwd), **Stat.fields(self._ftp.stat(path)))
+                        File(relpath(path, cwd), **File.stat(self._ftp.stat(path)))
                     )
 
     def _get_file(self, file: File) -> Readable:

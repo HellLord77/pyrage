@@ -13,7 +13,6 @@ from smbclient import scandir
 from pyrage.storage import Storage
 from pyrage.utils import File
 from pyrage.utils import Readable
-from pyrage.utils import Stat
 
 
 class SMBStorage(Storage):
@@ -37,7 +36,7 @@ class SMBStorage(Storage):
                     paths.append(dir_.path)
                 else:
                     self._add_file_list(
-                        File(relpath(dir_.path, self._path), **Stat.fields(dir_.stat()))
+                        File(relpath(dir_.path, self._path), **File.stat(dir_.stat()))
                     )
 
     def _get_file(self, file: File) -> Readable:
