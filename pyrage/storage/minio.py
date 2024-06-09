@@ -70,7 +70,6 @@ class MinIOStorage(Storage):
                 for object_ in self._minio.list_objects(
                     self._bucket, recursive=True, start_after=start_after
                 ):
-                    # noinspection PyArgumentList
                     self._add_file_list(
                         File(object_.object_name, size=object_.size, md5=object_.etag)
                     )
@@ -90,7 +89,6 @@ class MinIOStorage(Storage):
                 if object_.is_dir:
                     prefixes.append(object_.object_name)
                 else:
-                    # noinspection PyArgumentList
                     self._add_file_list(
                         File(object_.object_name, size=object_.size, md5=object_.etag)
                     )

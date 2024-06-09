@@ -21,7 +21,6 @@ class GiteaStorage(Storage):
             {"recursive": 1},
         )["tree"]:
             if "blob" == element["type"]:
-                # noinspection PyArgumentList
                 self._add_file_list(File(element["path"], size=element["size"]))
 
     def _get_file(self, file: File) -> Readable:

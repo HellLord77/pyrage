@@ -33,7 +33,6 @@ class WebDAVStorage(Storage):
                 if info["isdir"]:
                     paths.append(info["path"])
                 else:
-                    # noinspection PyArgumentList
                     self._add_file_list(
                         File(
                             info["path"].removeprefix(self._client.root),
@@ -50,7 +49,6 @@ class WebDAVStorage(Storage):
                 if path:
                     roots.append(path)
                 else:
-                    # noinspection PyArgumentList
                     self._add_file_list(
                         File(
                             path.removeprefix(self._client.root),

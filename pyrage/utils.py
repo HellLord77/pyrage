@@ -1,6 +1,5 @@
-from dataclasses import KW_ONLY
-from dataclasses import dataclass
 from typing import Iterator
+from typing import NamedTuple
 from typing import Optional
 from typing import Protocol
 
@@ -69,10 +68,8 @@ class Stat(Protocol):
         pass
 
 
-@dataclass(frozen=True)
-class File:
+class File(NamedTuple):
     path: str
-    _: KW_ONLY
     size: Optional[int] = None
     mtime: Optional[float] = None
     atime: Optional[float] = None
@@ -80,9 +77,7 @@ class File:
     md5: Optional[str] = None
 
     def __eq__(self, other):
-        if isinstance(other, str):
-            return other == self.path
-        elif isinstance(other, File):
+        if isinstance(other, File):
             for field in ("size", "md5"):
                 # noinspection PyUnboundLocalVariable
                 if (
@@ -92,8 +87,7 @@ class File:
                 ):
                     return False
             return True
-        else:
-            return NotImplemented
+        return NotImplemented
 
     @staticmethod
     def stat(stat: Stat) -> dict[str, Optional[int | float]]:

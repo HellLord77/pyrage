@@ -25,7 +25,6 @@ class GithubStorage(Storage):
     def _update_file_list(self):  # TODO pagination
         for element in self._repo.get_git_tree(self._sha, True).tree:
             if "blob" == element.type:
-                # noinspection PyArgumentList
                 self._add_file_list(File(element.path, size=element.size))
 
     def _get_file(self, file: File) -> Readable:

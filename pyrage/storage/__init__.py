@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 class Storage(metaclass=ABCMeta):
     def __init__(self):
-        self._file_list = {}  # TODO set
+        self._file_list = {}
         self._file_list_proxy = MappingProxyType(self._file_list)
 
     def __repr__(self):

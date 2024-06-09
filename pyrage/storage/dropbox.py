@@ -21,7 +21,6 @@ class DropboxStorage(Storage):
             self._cwd * (self._cwd != "/"), True
         ).entries:
             if isinstance(entry, FileMetadata):
-                # noinspection PyArgumentList
                 self._add_file_list(
                     File(relpath(entry.path_display, self._cwd), size=entry.size)
                 )

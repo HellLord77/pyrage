@@ -19,7 +19,6 @@ class GitStorage(Storage):
     def _update_file_list(self):
         for index in self._repo.tree(self._rev).traverse():
             if "blob" == index.type:
-                # noinspection PyArgumentList
                 self._add_file_list(File(index.path, size=index.size))
 
     def _get_file(self, file: File) -> Readable:

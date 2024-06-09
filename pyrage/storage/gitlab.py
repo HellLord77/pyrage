@@ -28,7 +28,6 @@ class GitlabStorage(Storage):
             ref=self._ref, recursive=True, iterator=True, get_all=True
         ):
             if "blob" == element["type"]:
-                # noinspection PyArgumentList
                 self._add_file_list(File(element["path"]))
 
     def _get_file(self, file: File) -> Readable:
