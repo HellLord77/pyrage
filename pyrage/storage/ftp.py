@@ -9,6 +9,7 @@ from pyrage.config import FTP_INCLUDE_HIDDEN
 from pyrage.storage import Storage
 from pyrage.utils import File
 from pyrage.utils import Readable
+from pyrage.utils import Stat
 
 
 class _FTPPort(FTP):
@@ -38,7 +39,7 @@ class FTPStorage(Storage):
         self._ftp.chdir(cwd)
         super().__init__()
 
-    def get_file_list(self) -> dict[str, File]:
+    def _update_file_list(self):
         cwd = self._ftp.getcwd()
         paths = [cwd]
         while paths:
@@ -48,18 +49,10 @@ class FTPStorage(Storage):
                 if self._ftp.path.isdir(path):
                     paths.append(path)
                 else:
-                    stat = self._ftp.stat(path)
-                    # noinspection PyArgumentList
+                    # noinspection PyTypeChecker
                     self._add_file_list(
-                        File(
-                            relpath(path, cwd),
-                            size=stat.st_size,
-                            mtime=stat.st_mtime,
-                            atime=stat.st_atime,
-                            ctime=stat.st_ctime,
-                        )
+                        File(relpath(path, cwd), **Stat.fields(self._ftp.stat(path)))
                     )
-        return super().get_file_list()
 
     def _get_file(self, file: File) -> Readable:
         return self._ftp.open(self._ftp.getcwd() + self._ftp.sep + file.path, "rb")

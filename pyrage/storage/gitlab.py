@@ -23,14 +23,13 @@ class GitlabStorage(Storage):
         self._ref = ref
         super().__init__()
 
-    def get_file_list(self) -> dict[str, File]:
+    def _update_file_list(self):
         for element in self._repo.repository_tree(
             ref=self._ref, recursive=True, iterator=True, get_all=True
         ):
             if "blob" == element["type"]:
                 # noinspection PyArgumentList
                 self._add_file_list(File(element["path"]))
-        return super().get_file_list()
 
     def _get_file(self, file: File) -> Readable:
         return ReadableResponse(

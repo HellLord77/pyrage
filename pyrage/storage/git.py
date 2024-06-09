@@ -16,12 +16,11 @@ class GitStorage(Storage):
         self._session = Session()
         super().__init__()
 
-    def get_file_list(self) -> dict[str, File]:
+    def _update_file_list(self):
         for index in self._repo.tree(self._rev).traverse():
             if "blob" == index.type:
                 # noinspection PyArgumentList
                 self._add_file_list(File(index.path, size=index.size))
-        return super().get_file_list()
 
     def _get_file(self, file: File) -> Readable:
         return open(join(self._repo.working_dir, file.path), "rb")

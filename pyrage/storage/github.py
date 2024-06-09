@@ -22,12 +22,11 @@ class GithubStorage(Storage):
         self._session = Session()
         super().__init__()
 
-    def get_file_list(self) -> dict[str, File]:  # TODO pagination
+    def _update_file_list(self):  # TODO pagination
         for element in self._repo.get_git_tree(self._sha, True).tree:
             if "blob" == element.type:
                 # noinspection PyArgumentList
                 self._add_file_list(File(element.path, size=element.size))
-        return super().get_file_list()
 
     def _get_file(self, file: File) -> Readable:
         return ReadableResponse(

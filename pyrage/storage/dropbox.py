@@ -16,7 +16,7 @@ class DropboxStorage(Storage):
         self._cwd = cwd
         super().__init__()
 
-    def get_file_list(self) -> dict[str, File]:
+    def _update_file_list(self):
         for entry in self._dropbox.files_list_folder(
             self._cwd * (self._cwd != "/"), True
         ).entries:
@@ -25,7 +25,6 @@ class DropboxStorage(Storage):
                 self._add_file_list(
                     File(relpath(entry.path_display, self._cwd), size=entry.size)
                 )
-        return super().get_file_list()
 
     def _get_file(self, file: File) -> Readable:
         return ReadableResponse(

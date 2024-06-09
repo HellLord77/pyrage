@@ -15,7 +15,7 @@ class GiteaStorage(Storage):
         self._sha = sha
         super().__init__()
 
-    def get_file_list(self) -> dict[str, File]:
+    def _update_file_list(self):
         for element in self._repo.gitea.requests_get(
             f"/repos/{self._repo.get_full_name()}/git/trees/{self._sha}",
             {"recursive": 1},
@@ -23,7 +23,6 @@ class GiteaStorage(Storage):
             if "blob" == element["type"]:
                 # noinspection PyArgumentList
                 self._add_file_list(File(element["path"], size=element["size"]))
-        return super().get_file_list()
 
     def _get_file(self, file: File) -> Readable:
         return ReadableResponse(

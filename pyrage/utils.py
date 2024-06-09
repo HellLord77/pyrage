@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import KW_ONLY
 from dataclasses import dataclass
 from typing import Iterator
@@ -53,6 +55,27 @@ class WritableHash(Protocol):
     # noinspection PyShadowingBuiltins
     def __init__(self, hash: Hash):
         self.write = hash.update
+
+
+class Stat(Protocol):
+    def st_size(self) -> int:
+        pass
+
+    def st_mtime(self) -> float:
+        pass
+
+    def st_atime(self) -> float:
+        pass
+
+    def st_ctime(self) -> float:
+        pass
+
+    @classmethod
+    def fields(cls, stat: Stat) -> dict[str, Optional[int | float]]:
+        # noinspection PyUnresolvedReferences
+        return {
+            field[3:]: getattr(stat, field, None) for field in cls.__protocol_attrs__
+        }
 
 
 @dataclass(frozen=True)

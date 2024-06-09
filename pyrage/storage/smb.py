@@ -13,6 +13,7 @@ from smbclient import scandir
 from pyrage.storage import Storage
 from pyrage.utils import File
 from pyrage.utils import Readable
+from pyrage.utils import Stat
 
 
 class SMBStorage(Storage):
@@ -28,25 +29,16 @@ class SMBStorage(Storage):
         self._path = PureWindowsPath(sep + sep + server + sep, share)
         super().__init__()
 
-    def get_file_list(self) -> dict[str, File]:
+    def _update_file_list(self):
         paths = [self._path]
         while paths:
             for dir_ in scandir(paths.pop(0)):
                 if dir_.is_dir():
                     paths.append(dir_.path)
                 else:
-                    stat = dir_.stat()
-                    # noinspection PyArgumentList
                     self._add_file_list(
-                        File(
-                            relpath(dir_.path, self._path),
-                            size=stat.st_size,
-                            mtime=stat.st_mtime,
-                            atime=stat.st_atime,
-                            ctime=stat.st_ctime,
-                        )
+                        File(relpath(dir_.path, self._path), **Stat.fields(dir_.stat()))
                     )
-        return super().get_file_list()
 
     def _get_file(self, file: File) -> Readable:
         return open_file(self._path.joinpath(file.path), "rb")

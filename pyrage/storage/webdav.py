@@ -26,7 +26,7 @@ class WebDAVStorage(Storage):
         self._client.verify = "https" == urlparse(hostname).scheme
         super().__init__()
 
-    def get_file_list(self) -> dict[str, File]:
+    def _update_file_list(self):
         paths = [self._client.root]
         while paths:
             for info in self._client.list(paths.pop(0), True):
@@ -40,9 +40,8 @@ class WebDAVStorage(Storage):
                             size=int(info["size"]),
                         )
                     )
-        return super().get_file_list()
 
-    def __get_file_list(self) -> dict[str, File]:
+    def __get_file_list(self):
         roots = [self._client.root]
         while roots:
             root = roots.pop(0)
@@ -58,7 +57,6 @@ class WebDAVStorage(Storage):
                             size=int(self._client.info(path)["size"]),
                         )
                     )
-        return super().get_file_list()
 
     def _get_file(self, file: File) -> Readable:
         return ReadableResponse(

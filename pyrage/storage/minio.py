@@ -62,7 +62,7 @@ class MinIOStorage(Storage):
         self._bucket = bucket
         super().__init__()
 
-    def get_file_list(self) -> dict[str, File]:
+    def _update_file_list(self):
         start_after = None
         object_ = None
         while True:
@@ -80,9 +80,8 @@ class MinIOStorage(Storage):
                 logger.error("[!] %s", start_after)
             else:
                 break
-        return super().get_file_list()
 
-    def __get_file_list(self) -> dict[str, File]:
+    def __get_file_list(self):
         prefixes = [""]
         while prefixes:
             for object_ in self._minio.list_objects(
@@ -95,7 +94,6 @@ class MinIOStorage(Storage):
                     self._add_file_list(
                         File(object_.object_name, size=object_.size, md5=object_.etag)
                     )
-        return super().get_file_list()
 
     def _get_file(self, file: File) -> Readable:
         return self._minio.get_object(self._bucket, file.path)
