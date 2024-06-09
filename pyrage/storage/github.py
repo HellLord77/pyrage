@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from github import Github
 from github.Consts import DEFAULT_BASE_URL
 from requests import Session
@@ -22,10 +24,10 @@ class GithubStorage(Storage):
         self._session = Session()
         super().__init__()
 
-    def _update_file_list(self):  # TODO pagination
+    def _generate_file_list(self) -> Iterable[File]:  # TODO pagination
         for element in self._repo.get_git_tree(self._sha, True).tree:
             if "blob" == element.type:
-                self._add_file_list(File(element.path, size=element.size))
+                yield File(element.path, size=element.size)
 
     def _get_file(self, file: File) -> Readable:
         return ReadableResponse(

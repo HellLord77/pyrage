@@ -1,5 +1,6 @@
 from posixpath import join
 from posixpath import relpath
+from typing import Iterable
 
 from dropbox import Dropbox
 from dropbox.files import FileMetadata
@@ -16,14 +17,12 @@ class DropboxStorage(Storage):
         self._cwd = cwd
         super().__init__()
 
-    def _update_file_list(self):
+    def _generate_file_list(self) -> Iterable[File]:
         for entry in self._dropbox.files_list_folder(
             self._cwd * (self._cwd != "/"), True
         ).entries:
             if isinstance(entry, FileMetadata):
-                self._add_file_list(
-                    File(relpath(entry.path_display, self._cwd), size=entry.size)
-                )
+                yield File(relpath(entry.path_display, self._cwd), size=entry.size)
 
     def _get_file(self, file: File) -> Readable:
         return ReadableResponse(

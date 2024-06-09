@@ -3,6 +3,7 @@ from posixpath import dirname
 from posixpath import join
 from posixpath import relpath
 from posixpath import sep
+from typing import Iterable
 from typing import Optional
 
 from paramiko import AutoAddPolicy
@@ -43,7 +44,7 @@ class SFTPStorage(Storage):
         self._sftp.chdir(cwd)
         super().__init__()
 
-    def _update_file_list(self):
+    def _generate_file_list(self) -> Iterable[File]:
         cwd = self._sftp.getcwd()
         paths = [cwd]
         while paths:
@@ -54,7 +55,7 @@ class SFTPStorage(Storage):
                     paths.append(path)
                 else:
                     # noinspection PyTypeChecker
-                    self._add_file_list(File(relpath(path, cwd), **File.stat(attr)))
+                    yield File(relpath(path, cwd), **File.stat(attr))
 
     def _get_file(self, file: File) -> Readable:
         return self._sftp.open(file.path, "rb")

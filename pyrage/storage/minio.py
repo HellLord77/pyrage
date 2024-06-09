@@ -62,7 +62,7 @@ class MinIOStorage(Storage):
         self._bucket = bucket
         super().__init__()
 
-    def _update_file_list(self):
+    def _generate_file_list(self) -> Iterable[File]:
         start_after = None
         object_ = None
         while True:
@@ -70,9 +70,7 @@ class MinIOStorage(Storage):
                 for object_ in self._minio.list_objects(
                     self._bucket, recursive=True, start_after=start_after
                 ):
-                    self._add_file_list(
-                        File(object_.object_name, size=object_.size, md5=object_.etag)
-                    )
+                    yield File(object_.object_name, size=object_.size, md5=object_.etag)
             except InvalidResponseError:
                 if object_ is not None:
                     start_after = object_.object_name
@@ -80,7 +78,7 @@ class MinIOStorage(Storage):
             else:
                 break
 
-    def __get_file_list(self):
+    def __get_file_list(self) -> Iterable[File]:
         prefixes = [""]
         while prefixes:
             for object_ in self._minio.list_objects(
@@ -89,9 +87,7 @@ class MinIOStorage(Storage):
                 if object_.is_dir:
                     prefixes.append(object_.object_name)
                 else:
-                    self._add_file_list(
-                        File(object_.object_name, size=object_.size, md5=object_.etag)
-                    )
+                    yield File(object_.object_name, size=object_.size, md5=object_.etag)
 
     def _get_file(self, file: File) -> Readable:
         return self._minio.get_object(self._bucket, file.path)

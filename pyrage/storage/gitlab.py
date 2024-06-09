@@ -1,3 +1,4 @@
+from typing import Iterable
 from typing import Optional
 
 from gitlab import Gitlab
@@ -23,12 +24,12 @@ class GitlabStorage(Storage):
         self._ref = ref
         super().__init__()
 
-    def _update_file_list(self):
+    def _generate_file_list(self) -> Iterable[File]:
         for element in self._repo.repository_tree(
             ref=self._ref, recursive=True, iterator=True, get_all=True
         ):
             if "blob" == element["type"]:
-                self._add_file_list(File(element["path"]))
+                yield File(element["path"])
 
     def _get_file(self, file: File) -> Readable:
         return ReadableResponse(

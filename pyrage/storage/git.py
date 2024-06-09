@@ -1,4 +1,5 @@
 from os.path import join
+from typing import Iterable
 from typing import Optional
 
 from git import Repo
@@ -16,10 +17,10 @@ class GitStorage(Storage):
         self._session = Session()
         super().__init__()
 
-    def _update_file_list(self):
+    def _generate_file_list(self) -> Iterable[File]:
         for index in self._repo.tree(self._rev).traverse():
             if "blob" == index.type:
-                self._add_file_list(File(index.path, size=index.size))
+                yield File(index.path, size=index.size)
 
     def _get_file(self, file: File) -> Readable:
         return open(join(self._repo.working_dir, file.path), "rb")

@@ -1,3 +1,4 @@
+from typing import Iterable
 from typing import Optional
 from urllib.parse import urlparse
 
@@ -26,21 +27,19 @@ class WebDAVStorage(Storage):
         self._client.verify = "https" == urlparse(hostname).scheme
         super().__init__()
 
-    def _update_file_list(self):
+    def _generate_file_list(self) -> Iterable[File]:
         paths = [self._client.root]
         while paths:
             for info in self._client.list(paths.pop(0), True):
                 if info["isdir"]:
                     paths.append(info["path"])
                 else:
-                    self._add_file_list(
-                        File(
-                            info["path"].removeprefix(self._client.root),
-                            size=int(info["size"]),
-                        )
+                    yield File(
+                        info["path"].removeprefix(self._client.root),
+                        size=int(info["size"]),
                     )
 
-    def __get_file_list(self):
+    def __get_file_list(self) -> Iterable[File]:
         roots = [self._client.root]
         while roots:
             root = roots.pop(0)
@@ -49,11 +48,9 @@ class WebDAVStorage(Storage):
                 if path:
                     roots.append(path)
                 else:
-                    self._add_file_list(
-                        File(
-                            path.removeprefix(self._client.root),
-                            size=int(self._client.info(path)["size"]),
-                        )
+                    yield File(
+                        path.removeprefix(self._client.root),
+                        size=int(self._client.info(path)["size"]),
                     )
 
     def _get_file(self, file: File) -> Readable:

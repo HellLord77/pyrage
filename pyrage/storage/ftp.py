@@ -1,6 +1,7 @@
 from ftplib import FTP
 from os.path import relpath
 from shutil import copyfileobj
+from typing import Iterable
 from typing import Optional
 
 from ftputil import FTPHost
@@ -38,7 +39,7 @@ class FTPStorage(Storage):
         self._ftp.chdir(cwd)
         super().__init__()
 
-    def _update_file_list(self):
+    def _generate_file_list(self) -> Iterable[File]:
         cwd = self._ftp.getcwd()
         paths = [cwd]
         while paths:
@@ -49,9 +50,7 @@ class FTPStorage(Storage):
                     paths.append(path)
                 else:
                     # noinspection PyTypeChecker
-                    self._add_file_list(
-                        File(relpath(path, cwd), **File.stat(self._ftp.stat(path)))
-                    )
+                    yield File(relpath(path, cwd), **File.stat(self._ftp.stat(path)))
 
     def _get_file(self, file: File) -> Readable:
         return self._ftp.open(self._ftp.getcwd() + self._ftp.sep + file.path, "rb")

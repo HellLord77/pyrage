@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from gitea import Gitea
 from gitea import Repository
 
@@ -15,13 +17,13 @@ class GiteaStorage(Storage):
         self._sha = sha
         super().__init__()
 
-    def _update_file_list(self):
+    def _generate_file_list(self) -> Iterable[File]:
         for element in self._repo.gitea.requests_get(
             f"/repos/{self._repo.get_full_name()}/git/trees/{self._sha}",
             {"recursive": 1},
         )["tree"]:
             if "blob" == element["type"]:
-                self._add_file_list(File(element["path"], size=element["size"]))
+                yield File(element["path"], size=element["size"])
 
     def _get_file(self, file: File) -> Readable:
         return ReadableResponse(

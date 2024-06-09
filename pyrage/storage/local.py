@@ -2,6 +2,7 @@ from hashlib import md5
 from pathlib import Path
 from shutil import copyfileobj
 from tempfile import TemporaryDirectory
+from typing import Iterable
 
 from pyrage.storage import Storage
 from pyrage.utils import File
@@ -22,15 +23,13 @@ class LocalStorage(Storage):
         self._path = Path(path).resolve(strict=True)
         super().__init__()
 
-    def _update_file_list(self):
+    def _generate_file_list(self) -> Iterable[File]:
         for path in self._path.rglob("*"):
             if path.is_file():
-                self._add_file_list(
-                    File(
-                        path.relative_to(self._path).as_posix(),
-                        **File.stat(path.stat()),
-                        md5=_get_md5(path)
-                    )
+                yield File(
+                    path.relative_to(self._path).as_posix(),
+                    **File.stat(path.stat()),
+                    md5=_get_md5(path)
                 )
 
     def _get_file(self, file: File) -> Readable:

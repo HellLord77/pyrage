@@ -2,6 +2,7 @@ from ntpath import relpath
 from ntpath import sep
 from pathlib import PureWindowsPath
 from shutil import copyfileobj
+from typing import Iterable
 from typing import Optional
 
 from smbclient import makedirs
@@ -28,16 +29,14 @@ class SMBStorage(Storage):
         self._path = PureWindowsPath(sep + sep + server + sep, share)
         super().__init__()
 
-    def _update_file_list(self):
+    def _generate_file_list(self) -> Iterable[File]:
         paths = [self._path]
         while paths:
             for dir_ in scandir(paths.pop(0)):
                 if dir_.is_dir():
                     paths.append(dir_.path)
                 else:
-                    self._add_file_list(
-                        File(relpath(dir_.path, self._path), **File.stat(dir_.stat()))
-                    )
+                    yield File(relpath(dir_.path, self._path), **File.stat(dir_.stat()))
 
     def _get_file(self, file: File) -> Readable:
         return open_file(self._path.joinpath(file.path), "rb")
