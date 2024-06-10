@@ -1,13 +1,13 @@
 from typing import Iterable
 from typing import Optional
 
-from gitlab import Gitlab
 from gitlab.utils import EncodedId
 
-from pyrage.storage import Storage
-from pyrage.utils import File
-from pyrage.utils import Readable
-from pyrage.utils import ReadableResponse
+from gitlab import Gitlab
+from . import Storage
+from ..utils import File
+from ..utils import Readable
+from ..utils import ReadableResponse
 
 
 class GitlabStorage(Storage):

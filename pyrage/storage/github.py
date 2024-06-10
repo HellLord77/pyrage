@@ -1,13 +1,13 @@
 from typing import Iterable
 
-from github import Github
 from github.Consts import DEFAULT_BASE_URL
 from requests import Session
 
-from pyrage.storage import Storage
-from pyrage.utils import File
-from pyrage.utils import Readable
-from pyrage.utils import ReadableResponse
+from github import Github
+from . import Storage
+from ..utils import File
+from ..utils import Readable
+from ..utils import ReadableResponse
 
 
 class GithubStorage(Storage):

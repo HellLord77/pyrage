@@ -2,13 +2,13 @@ from posixpath import join
 from posixpath import relpath
 from typing import Iterable
 
-from dropbox import Dropbox
 from dropbox.files import FileMetadata
 
-from pyrage.storage import Storage
-from pyrage.utils import File
-from pyrage.utils import Readable
-from pyrage.utils import ReadableResponse
+from dropbox import Dropbox
+from . import Storage
+from ..utils import File
+from ..utils import Readable
+from ..utils import ReadableResponse
 
 
 class DropboxStorage(Storage):

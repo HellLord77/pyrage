@@ -5,6 +5,7 @@ from abc import ABCMeta
 from abc import abstractmethod
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import as_completed
+from functools import cache
 from functools import partial
 from types import MappingProxyType
 from typing import Any
@@ -16,10 +17,10 @@ from typing import Optional
 
 from tqdm.contrib.concurrent import thread_map
 
-from pyrage.config import STORAGE_DRY_RUN
-from pyrage.config import STORAGE_MAX_THREADS
-from pyrage.utils import File
-from pyrage.utils import Readable
+from ..config import STORAGE_DRY_RUN
+from ..config import STORAGE_MAX_THREADS
+from ..utils import File
+from ..utils import Readable
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +31,13 @@ class Storage(metaclass=ABCMeta):
         self._file_list_proxy = MappingProxyType(self._file_list)
 
     def __repr__(self):
-        return f"{type(self).__name__}({self.len_file_list()})"
+        return f"{type(self).__name__}({len(self)})"
+
+    def __len__(self):
+        return self.len_file_list()
+
+    def __iter__(self) -> Iterator[File]:
+        return iter(self.fetch_file_list().values())
 
     def len_file_list(self) -> int:
         return len(self._file_list)
@@ -59,7 +66,7 @@ class Storage(metaclass=ABCMeta):
     ) -> Iterator[File]:
         if isinstance(files, Storage):
             files = files.fetch_file_list()
-        for file in self.fetch_file_list().values():
+        for file in self:
             try:
                 other_file = files[file.path]
             except KeyError:
@@ -94,10 +101,10 @@ class Storage(metaclass=ABCMeta):
     def del_file(self, file: File):
         _run(partial(self._del_file, file))
 
-    def _del_files(self, files: Storage | Iterable[File]):
+    def _del_files(self, files: Iterable[File]):
         _execute(self._del_file, files)
 
-    def del_files(self, files: Storage | Iterable[File]):
+    def del_files(self, files: Iterable[File]):
         _run(partial(self._del_files, files))
 
     def _copy_file(self, src: File | Storage, dst: File):
@@ -110,10 +117,10 @@ class Storage(metaclass=ABCMeta):
     def copy_file(self, src: File | Storage, dst: File):
         _run(partial(self._copy_file, src, dst))
 
-    def _copy_files(self, src: Storage, dsts: Storage | Iterable[File]):
+    def _copy_files(self, src: Storage, dsts: Iterable[File]):
         _execute(partial(self._copy_file, src), dsts)
 
-    def copy_files(self, src: Storage, dsts: Storage | Iterable[File]):
+    def copy_files(self, src: Storage, dsts: Iterable[File]):
         _run(partial(self._copy_files, src, dsts))
 
     def _move_file(self, src: File, dst: File | Storage):
@@ -125,13 +132,14 @@ class Storage(metaclass=ABCMeta):
     def move_file(self, src: File, dst: File | Storage):
         _run(partial(self._move_file, src, dst))
 
-    def _move_files(self, srcs: Storage | Iterable[File], dst: Storage):
+    def _move_files(self, srcs: Iterable[File], dst: Storage):
         _execute(partial(self._move_file, dst=dst), srcs)
 
-    def move_files(self, srcs: Storage | Iterable[File], dst: Storage):
+    def move_files(self, srcs: Iterable[File], dst: Storage):
         _run(partial(self._move_files, srcs, dst))
 
     def clear(self):
+        self.fetch_file_list()
         self.del_files(self)
 
     def sync(self, other: Storage):
@@ -147,18 +155,21 @@ class Storage(metaclass=ABCMeta):
         self.del_files(tuple(self.diff_file_list(other, False)))
 
 
-# noinspection PyShadowingNames
-def _run(partial: partial) -> Any:
-    name = partial.func.__name__
+@cache
+def _name(func: Callable) -> str:
+    name = func.__name__
     n = name[1]
     if name.endswith("s"):
         n = n.upper()
-    logger.info("[%s] %s", n, partial.args)
+    return n
+
+
+def _run(func: partial) -> Any:
+    # noinspection PyTypeChecker
+    logger.info("[%s] %s", _name(func.func), func.args)
     if not STORAGE_DRY_RUN:
-        return partial()
+        return func()
 
 
-def _execute(func: Callable[[File], Any], files: Storage | Iterable[File]):
-    if isinstance(files, Storage):
-        files = files.fetch_file_list().values()
+def _execute(func: Callable[[File], Any], files: Iterable[File]):
     thread_map(func, files, max_workers=STORAGE_MAX_THREADS)

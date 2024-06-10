@@ -2,12 +2,12 @@ from os.path import join
 from typing import Iterable
 from typing import Optional
 
-from git import Repo
 from requests import Session
 
-from pyrage.storage import Storage
-from pyrage.utils import File
-from pyrage.utils import Readable
+from git import Repo
+from . import Storage
+from ..utils import File
+from ..utils import Readable
 
 
 class GitStorage(Storage):

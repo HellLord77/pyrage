@@ -2,11 +2,10 @@ from typing import Iterable
 
 from gitea import Gitea
 from gitea import Repository
-
-from pyrage.storage import Storage
-from pyrage.utils import File
-from pyrage.utils import Readable
-from pyrage.utils import ReadableResponse
+from . import Storage
+from ..utils import File
+from ..utils import Readable
+from ..utils import ReadableResponse
 
 
 class GiteaStorage(Storage):

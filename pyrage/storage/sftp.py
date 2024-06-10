@@ -1,8 +1,8 @@
-import stat
 from posixpath import dirname
 from posixpath import join
 from posixpath import relpath
 from posixpath import sep
+from stat import S_ISDIR
 from typing import Iterable
 from typing import Optional
 
@@ -11,10 +11,10 @@ from paramiko import SFTPClient
 from paramiko import SSHClient
 from paramiko.config import SSH_PORT
 
-from pyrage.config import SFTP_AUTO_ADD
-from pyrage.storage import Storage
-from pyrage.utils import File
-from pyrage.utils import Readable
+from . import Storage
+from ..config import SFTP_AUTO_ADD
+from ..utils import File
+from ..utils import Readable
 
 
 def _makedirs(sftp: SFTPClient, path: str):
@@ -51,7 +51,7 @@ class SFTPStorage(Storage):
             prefix = paths.pop(0)
             for attr in self._sftp.listdir_attr(prefix):
                 path = join(prefix, attr.filename)
-                if stat.S_ISDIR(attr.st_mode):
+                if S_ISDIR(attr.st_mode):
                     paths.append(path)
                 else:
                     # noinspection PyTypeChecker

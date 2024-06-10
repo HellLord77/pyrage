@@ -3,7 +3,6 @@ from typing import Iterable
 from urllib.parse import urlparse
 from uuid import uuid4
 
-from minio import Minio
 from minio.deleteobjects import DeleteObject
 from minio.error import InvalidResponseError
 from minio.helpers import DictType
@@ -13,11 +12,12 @@ from urllib3 import BaseHTTPResponse
 # noinspection PyProtectedMember
 from urllib3._collections import RecentlyUsedContainer
 
-from pyrage.config import MINIO_BYPASS_CACHE
-from pyrage.config import STORAGE_MAX_THREADS
-from pyrage.storage import Storage
-from pyrage.utils import File
-from pyrage.utils import Readable
+from minio import Minio
+from . import Storage
+from ..config import MINIO_BYPASS_CACHE
+from ..config import STORAGE_MAX_THREADS
+from ..utils import File
+from ..utils import Readable
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +74,7 @@ class MinIOStorage(Storage):
             except InvalidResponseError:
                 if object_ is not None:
                     start_after = object_.object_name
-                logger.error("[!] %s", start_after)
+                logger.error("[!] %s", start_after)  # TODO remove
             else:
                 break
 
@@ -101,7 +101,8 @@ class MinIOStorage(Storage):
     def _del_file(self, file: File):
         self._minio.remove_object(self._bucket, file.path)
 
-    def _del_files(self, files: Iterable[File]):
-        self._minio.remove_objects(
+    def __del_files(self, files: Iterable[File]):
+        for error in self._minio.remove_objects(
             self._bucket, (DeleteObject(file.path) for file in files)
-        )
+        ):
+            raise error

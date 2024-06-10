@@ -4,10 +4,10 @@ from shutil import copyfileobj
 from tempfile import TemporaryDirectory
 from typing import Iterable
 
-from pyrage.storage import Storage
-from pyrage.utils import File
-from pyrage.utils import Readable
-from pyrage.utils import WritableHash
+from . import Storage
+from ..utils import File
+from ..utils import Readable
+from ..utils import WritableHash
 
 
 def _get_md5(path: Path) -> str:

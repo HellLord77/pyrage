@@ -6,10 +6,10 @@ from typing import Optional
 
 from ftputil import FTPHost
 
-from pyrage.config import FTP_INCLUDE_HIDDEN
-from pyrage.storage import Storage
-from pyrage.utils import File
-from pyrage.utils import Readable
+from . import Storage
+from ..config import FTP_INCLUDE_HIDDEN
+from ..utils import File
+from ..utils import Readable
 
 
 class _FTPPort(FTP):

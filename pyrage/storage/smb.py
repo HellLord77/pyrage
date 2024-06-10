@@ -11,9 +11,9 @@ from smbclient import register_session
 from smbclient import remove
 from smbclient import scandir
 
-from pyrage.storage import Storage
-from pyrage.utils import File
-from pyrage.utils import Readable
+from . import Storage
+from ..utils import File
+from ..utils import Readable
 
 
 class SMBStorage(Storage):
