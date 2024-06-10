@@ -18,5 +18,5 @@ class CSVStorageCache(StorageCache):
         writer(writable, quoting=QUOTE_STRINGS).writerows(files)
 
     @staticmethod
-    def _load_file_list(readable: TextIO) -> Iterator[File]:
+    def _load_file_list(readable: TextIO) -> Iterator[File]:  # FIXME size becomes float
         return starmap(File, reader(readable, quoting=QUOTE_STRINGS))
