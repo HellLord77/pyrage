@@ -1,3 +1,5 @@
+git+https://github.com/python-cffi/cffi.git@v1.17.0rc1
+
 tqdm
 urllib3
 requests
