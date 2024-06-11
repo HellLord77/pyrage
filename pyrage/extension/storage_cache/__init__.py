@@ -4,6 +4,7 @@ from typing import TypeVar
 from .cache import StorageCache
 from .cache.csv import CSVStorageCache
 from .cache.json import JSONStorageCache
+from .cache.sqlite import SqliteStorageCache
 from ...storage import Storage
 
 T = TypeVar("T", bound=Storage)
