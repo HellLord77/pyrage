@@ -7,14 +7,14 @@ from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import as_completed
 from functools import cache
 from functools import partial
-from types import MappingProxyType
 from typing import Any
 from typing import Callable
 from typing import Iterable
 from typing import Iterator
 from typing import Mapping
-from typing import Optional
 from typing import MutableMapping
+from typing import Optional
+
 from tqdm.contrib.concurrent import thread_map
 
 from ..config import STORAGE_DRY_RUN
@@ -30,7 +30,6 @@ class Storage(metaclass=ABCMeta):
 
     def __init__(self):
         self._file_list = {}
-        self._file_list_proxy = MappingProxyType(self._file_list)
 
     def __repr__(self):
         return f"{type(self).__name__}({len(self)})"
@@ -47,9 +46,6 @@ class Storage(metaclass=ABCMeta):
     def add_file_list(self, file: File):
         self._file_list[file.path] = file
 
-    def clear_file_list(self):
-        self._file_list.clear()
-
     @abstractmethod
     def _generate_file_list(self) -> Iterable[File]:
         raise NotImplementedError
@@ -58,10 +54,10 @@ class Storage(metaclass=ABCMeta):
         any(map(self.add_file_list, self._generate_file_list()))
         logger.info("[#] %s", self)
 
-    def fetch_file_list(self) -> Mapping[str, File]:
+    def fetch_file_list(self) -> MutableMapping[str, File]:
         if not self._file_list:
             self._fetch_file_list()
-        return self._file_list_proxy
+        return self._file_list
 
     def diff_file_list(
         self, files: Storage | Mapping[str, File], strict: bool = True
