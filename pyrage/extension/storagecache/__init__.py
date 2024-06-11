@@ -3,7 +3,7 @@ from functools import lru_cache
 from .cache import StorageCache
 from .cache.csv import CSVStorageCache
 from .cache.json import JSONStorageCache
-from .cache.pickle import PickleStorageCache
+from .cache.pickle import PickleStorageCacheStreaming as PickleStorageCache
 from .cache.sqlite import SqliteStorageCache
 from ..utils import TStorage
 

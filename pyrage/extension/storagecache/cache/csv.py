@@ -12,9 +12,9 @@ class CSVStorageCache(StorageCache):
     EXTENSION = "csv"
 
     def _dump_file_list(self):
-        with open(self._cache_path, "w", newline="") as file:
-            writer(file, quoting=QUOTE_STRINGS).writerows(self)
+        with open(self._cache_path, "w", newline="") as cache:
+            writer(cache, quoting=QUOTE_STRINGS).writerows(self)
 
     def _load_file_list(self) -> Iterator[File]:  # FIXME type(size) = float
-        with open(self._cache_path, "r") as file:
-            return starmap(File, reader(file, quoting=QUOTE_STRINGS))
+        with open(self._cache_path, "r") as cache:
+            return starmap(File, reader(cache, quoting=QUOTE_STRINGS))

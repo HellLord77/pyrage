@@ -39,3 +39,4 @@ class SqliteStorageCache(StorageCache):
             cur.execute("SELECT * FROM _;")
             yield from starmap(File, cur)
             cur.close()
+        con.close()
