@@ -2,9 +2,9 @@ from posixpath import join
 from posixpath import relpath
 from typing import Iterable
 
+from dropbox import Dropbox
 from dropbox.files import FileMetadata
 
-from dropbox import Dropbox
 from . import Storage
 from ..utils import File
 from ..utils import Readable

@@ -15,8 +15,6 @@ from ....utils import File
 class StorageCache(metaclass=ABCMeta):
     EXTENSION: str
 
-    _file_list: dict[str, File]
-
     def __init__(self, *args, cache_path: Optional[str] = None, **kwargs):
         if cache_path is None:
             cache_path = f"{type(self).__name__}.{self.EXTENSION}"

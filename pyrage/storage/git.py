@@ -2,9 +2,9 @@ from os.path import join
 from typing import Iterable
 from typing import Optional
 
+from git import Repo
 from requests import Session
 
-from git import Repo
 from . import Storage
 from ..utils import File
 from ..utils import Readable

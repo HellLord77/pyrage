@@ -3,6 +3,7 @@ from typing import Iterable
 from urllib.parse import urlparse
 from uuid import uuid4
 
+from minio import Minio
 from minio.deleteobjects import DeleteObject
 from minio.error import InvalidResponseError
 from minio.helpers import DictType
@@ -12,7 +13,6 @@ from urllib3 import BaseHTTPResponse
 # noinspection PyProtectedMember
 from urllib3._collections import RecentlyUsedContainer
 
-from minio import Minio
 from . import Storage
 from ..config import MINIO_BYPASS_CACHE
 from ..config import STORAGE_MAX_THREADS

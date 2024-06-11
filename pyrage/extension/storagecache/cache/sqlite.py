@@ -17,8 +17,7 @@ class SqliteStorageCache(StorageCache):
         writable.close()
         remove(writable.name)
         with connect(writable.name) as con:
-            cur = con.cursor()
-            cur.execute(
+            con.execute(
                 """
                 CREATE TABLE _ (
                     path TEXT PRIMARY KEY NOT NULL,
@@ -30,14 +29,14 @@ class SqliteStorageCache(StorageCache):
                 );
                 """
             )
-            cur.executemany(
+            con.executemany(
                 """
                 INSERT INTO _ (path, size, mtime, atime, ctime, md5)
                 VALUES (?, ?, ?, ?, ?, ?);
                 """,
                 files,
             )
-            cur.close()
+        con.close()
 
     @staticmethod
     def _load_file_list(readable: TextIO) -> Iterator[File]:

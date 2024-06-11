@@ -14,7 +14,7 @@ from typing import Iterable
 from typing import Iterator
 from typing import Mapping
 from typing import Optional
-
+from typing import MutableMapping
 from tqdm.contrib.concurrent import thread_map
 
 from ..config import STORAGE_DRY_RUN
@@ -26,6 +26,8 @@ logger = logging.getLogger(__name__)
 
 
 class Storage(metaclass=ABCMeta):
+    _file_list: MutableMapping[str, File]
+
     def __init__(self):
         self._file_list = {}
         self._file_list_proxy = MappingProxyType(self._file_list)
@@ -56,7 +58,7 @@ class Storage(metaclass=ABCMeta):
         any(map(self.add_file_list, self._generate_file_list()))
         logger.info("[#] %s", self)
 
-    def fetch_file_list(self) -> MappingProxyType[str, File]:
+    def fetch_file_list(self) -> Mapping[str, File]:
         if not self._file_list:
             self._fetch_file_list()
         return self._file_list_proxy
