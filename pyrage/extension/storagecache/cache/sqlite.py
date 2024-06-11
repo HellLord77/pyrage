@@ -1,9 +1,6 @@
 from itertools import starmap
-from os import remove
 from sqlite3 import connect
-from typing import Iterable
 from typing import Iterator
-from typing import TextIO
 
 from . import StorageCache
 from ....utils import File
@@ -12,11 +9,9 @@ from ....utils import File
 class SqliteStorageCache(StorageCache):
     EXTENSION = "db"
 
-    @staticmethod
-    def _dump_file_list(writable: TextIO, files: Iterable[File]):
-        writable.close()
-        remove(writable.name)
-        with connect(writable.name) as con:
+    def _dump_file_list(self):
+        with connect(self._cache_path) as con:
+            con.execute("DROP TABLE IF EXISTS _;")
             con.execute(
                 """
                 CREATE TABLE _ (
@@ -34,14 +29,12 @@ class SqliteStorageCache(StorageCache):
                 INSERT INTO _ (path, size, mtime, atime, ctime, md5)
                 VALUES (?, ?, ?, ?, ?, ?);
                 """,
-                files,
+                self,
             )
         con.close()
 
-    @staticmethod
-    def _load_file_list(readable: TextIO) -> Iterator[File]:
-        readable.close()
-        with connect(readable.name) as con:
+    def _load_file_list(self) -> Iterator[File]:
+        with connect(self._cache_path) as con:
             cur = con.cursor()
             cur.execute("SELECT * FROM _;")
             yield from starmap(File, cur)

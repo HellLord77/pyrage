@@ -1,18 +1,16 @@
 from functools import lru_cache
-from typing import TypeVar
 
 from .cache import StorageCache
 from .cache.csv import CSVStorageCache
 from .cache.json import JSONStorageCache
+from .cache.pickle import PickleStorageCache
 from .cache.sqlite import SqliteStorageCache
-from ...storage import Storage
-
-T = TypeVar("T", bound=Storage)
+from ..utils import TStorage
 
 
 @lru_cache
 def cache(
-    storage: type[T], storage_cache: type[StorageCache] = JSONStorageCache
-) -> type[T]:
+    storage: type[TStorage], storage_cache: type[StorageCache] = JSONStorageCache
+) -> type[TStorage]:
     # noinspection PyTypeChecker
     return type(storage.__name__ + "Cache", (storage_cache, storage), {})
