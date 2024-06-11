@@ -1,9 +1,9 @@
 from typing import Iterable
 from typing import Optional
 
+from gitlab import Gitlab
 from gitlab.utils import EncodedId
 
-from gitlab import Gitlab
 from . import Storage
 from ..utils import File
 from ..utils import Readable
@@ -15,12 +15,14 @@ class GitlabStorage(Storage):
         self,
         owner: int | str,
         repo: str = "",
-        ref: str = "main",
+        ref: Optional[str] = None,
         url: Optional[str] = None,
     ):
         self._repo = Gitlab(url).projects.get(
             owner if isinstance(owner, int) else f"{owner}/{repo}"
         )
+        if ref is None:
+            ref = self._repo.default_branch
         self._ref = ref
         super().__init__()
 

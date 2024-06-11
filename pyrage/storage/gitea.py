@@ -1,7 +1,9 @@
 from typing import Iterable
+from typing import Optional
 
 from gitea import Gitea
 from gitea import Repository
+
 from . import Storage
 from ..utils import File
 from ..utils import Readable
@@ -9,10 +11,14 @@ from ..utils import ReadableResponse
 
 
 class GiteaStorage(Storage):
-    def __init__(self, url: str, owner: int | str, repo: str = "", sha: str = "main"):
+    def __init__(
+        self, url: str, owner: int | str, repo: str = "", sha: Optional[str] = None
+    ):
         gitea = Gitea(url, auth=1)
         gitea.requests.auth = None
         self._repo = Repository.request(gitea, owner, repo)
+        if sha is None:
+            sha = self._repo.default_branch
         self._sha = sha
         super().__init__()
 
