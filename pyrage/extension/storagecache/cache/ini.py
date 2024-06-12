@@ -34,3 +34,23 @@ class INIStorageCachePretty(INIStorageCache):
         config["_"] = {file.path: file[1:] for file in self}
         with open(self._cache_path, "w") as cache:
             config.write(cache)
+
+
+class INIStorageCacheCompat(INIStorageCache):
+    def _dump_file_list(self):
+        config = ConfigParser()
+        config.update(
+            (file.path, dict(islice(zip(file._fields, map(repr, file)), 1, None)))
+            for file in self
+        )
+        with open(self._cache_path, "w") as cache:
+            config.write(cache)
+
+    def _load_file_list(self) -> Iterator[File]:
+        config = ConfigParser()
+        with open(self._cache_path, "r") as cache:
+            config.read_file(cache)
+        return (
+            File(path=path, **dict(zip(file, map(literal_eval, file.values()))))
+            for path, file in config.items()
+        )

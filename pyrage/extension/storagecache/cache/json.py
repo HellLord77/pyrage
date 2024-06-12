@@ -23,3 +23,13 @@ class JSONStorageCachePretty(JSONStorageCache):
     def _dump_file_list(self):
         with open(self._cache_path, "w") as cache:
             dump(tuple(self), cache, indent=2)
+
+
+class JSONStorageCacheCompat(JSONStorageCache):
+    def _dump_file_list(self):
+        with open(self._cache_path, "w") as cache:
+            dump(tuple(file._asdict() for file in self), cache, indent=2)
+
+    def _load_file_list(self) -> Iterator[File]:
+        with open(self._cache_path, "r") as cache:
+            return (File(**file) for file in load(cache))
