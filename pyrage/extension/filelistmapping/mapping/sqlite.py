@@ -1,13 +1,16 @@
 from sqlite3 import connect
 from typing import Iterator
+from typing import Optional
 
 from . import FileListMapping
 from ....utils import File
 
 
 class SqliteFileListMapping(FileListMapping):
-    def __init__(self, *args, mapping_path: str = ":memory:", **kwargs):
-        self._mapping = connect(mapping_path)
+    def __init__(self, database: Optional[str] = None):
+        if database is None:
+            database = ":memory:"
+        self._mapping = connect(database)
         self._mapping.execute(
             """
             CREATE TABLE IF NOT EXISTS _ (
@@ -20,13 +23,7 @@ class SqliteFileListMapping(FileListMapping):
             );
             """
         )
-        self.clear()
-        super().__init__(*args, **kwargs)
-        self._file_list = self
-
-    def __del__(self):
-        super().__del__()
-        self._mapping.close()
+        super().__init__()
 
     def __contains__(self, key: str) -> bool:
         return bool(

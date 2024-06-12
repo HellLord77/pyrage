@@ -7,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import as_completed
 from functools import cache
 from functools import partial
+from types import MappingProxyType
 from typing import Any
 from typing import Callable
 from typing import Iterable
@@ -30,6 +31,7 @@ class Storage(metaclass=ABCMeta):
 
     def __init__(self):
         self._file_list = {}
+        self._file_list_proxy = MappingProxyType(self._file_list)
 
     def __repr__(self):
         return f"{type(self).__name__}({len(self)})"
@@ -54,10 +56,10 @@ class Storage(metaclass=ABCMeta):
         any(map(self.add_file_list, self._generate_file_list()))
         logger.info("[#] %s", self)
 
-    def fetch_file_list(self) -> MutableMapping[str, File]:
+    def fetch_file_list(self) -> MappingProxyType[str, File]:
         if not self._file_list:
             self._fetch_file_list()
-        return self._file_list
+        return self._file_list_proxy
 
     def diff_file_list(
         self, files: Storage | Mapping[str, File], strict: bool = True

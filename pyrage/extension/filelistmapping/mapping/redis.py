@@ -10,11 +10,9 @@ from ....utils import File
 
 
 class RedisFileListMapping(FileListMapping):
-    def __init__(self, *args, mapping_url: Optional[str] = None, **kwargs):
-        self._mapping = Redis() if mapping_url is None else Redis.from_url(mapping_url)
-        self.clear()
-        super().__init__(*args, **kwargs)
-        self._file_list = self
+    def __init__(self, url: Optional[str] = None):
+        self._mapping = Redis() if url is None else Redis.from_url(url)
+        super().__init__()
 
     def __len__(self):
         return self._mapping.dbsize()

@@ -14,4 +14,6 @@ def cache(
     storage: type[TStorage], storage_cache: type[StorageCache] = JSONStorageCache
 ) -> type[TStorage]:
     # noinspection PyTypeChecker
-    return type(storage.__name__ + "Cache", (storage_cache, storage), {})
+    return type(
+        f"{storage.__name__}_{storage_cache.__name__}", (storage_cache, storage), {}
+    )

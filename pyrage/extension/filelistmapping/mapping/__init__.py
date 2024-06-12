@@ -5,7 +5,8 @@ from ....utils import File
 
 
 class FileListMapping(MutableMapping[str, File], metaclass=ABCMeta):
-    _file_list: MutableMapping[str, File]
+    def __init__(self):
+        self.clear()
 
     def __del__(self):
         self.clear()

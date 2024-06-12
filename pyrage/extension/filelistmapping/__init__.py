@@ -2,6 +2,7 @@ from functools import lru_cache
 
 from .mapping import FileListMapping
 from .mapping.sqlite import SqliteFileListMapping
+from .utils import StorageMapping
 from ..utils import TStorage
 
 
@@ -11,4 +12,8 @@ def mapping(
     file_list_mapping: type[FileListMapping] = SqliteFileListMapping,
 ) -> type[TStorage]:
     # noinspection PyTypeChecker
-    return type(storage.__name__ + "Mapping", (file_list_mapping, storage), {})
+    return type(
+        f"{storage.__name__}_{file_list_mapping.__name__}",
+        (StorageMapping, storage),
+        {"_file_list_mapping": file_list_mapping},
+    )
