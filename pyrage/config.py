@@ -14,6 +14,6 @@ WEBDAV_DISABLE_CHECK: Final[bool] = (
     os.getenv("WEBDAV_DISABLE_CHECK", "false").lower() == "true"
 )
 
-MINIO_BYPASS_CACHE: Final[bool] = (
-    os.getenv("MINIO_BYPASS_CACHE", "false").lower() == "true"
+MINIO_RETRY_GENERATE: Final[bool] = (
+    os.getenv("MINIO_RETRY_GENERATE", "true").lower() == "true"
 )

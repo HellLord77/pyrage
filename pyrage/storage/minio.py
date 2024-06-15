@@ -1,62 +1,25 @@
-import logging
 from typing import Iterable
 from urllib.parse import urlparse
-from uuid import uuid4
 
 from minio import Minio
 from minio.deleteobjects import DeleteObject
 from minio.error import InvalidResponseError
-from minio.helpers import DictType
 from minio.helpers import MAX_PART_SIZE
-from urllib3 import BaseHTTPResponse
 
 # noinspection PyProtectedMember
 from urllib3._collections import RecentlyUsedContainer
 
 from . import Storage
-from ..config import MINIO_BYPASS_CACHE
+from ..config import MINIO_RETRY_GENERATE
 from ..config import STORAGE_MAX_THREADS
 from ..utils import File
 from ..utils import Readable
-
-logger = logging.getLogger(__name__)
-
-
-class _MinioBypassCache(Minio):
-    def _url_open(
-        self,
-        method: str,
-        region: str,
-        bucket_name: str | None = None,
-        object_name: str | None = None,
-        body: bytes | None = None,
-        headers: DictType | None = None,
-        query_params: DictType | None = None,
-        preload_content: bool = True,
-        no_body_trace: bool = False,
-    ) -> BaseHTTPResponse:
-        if query_params is None:
-            query_params = {}
-        query_params[uuid4().hex] = uuid4().hex
-        return super()._url_open(
-            method,
-            region,
-            bucket_name,
-            object_name,
-            body,
-            headers,
-            query_params,
-            preload_content,
-            no_body_trace,
-        )
 
 
 class MinIOStorage(Storage):
     def __init__(self, endpoint: str, bucket: str, keys: tuple[str, str] = ()):
         parts = urlparse(endpoint)
-        self._minio = (_MinioBypassCache if MINIO_BYPASS_CACHE else Minio)(
-            parts.netloc, *keys, secure="https" == parts.scheme
-        )
+        self._minio = Minio(parts.netloc, *keys, secure="https" == parts.scheme)
         # noinspection PyProtectedMember
         self._minio._http.pools = RecentlyUsedContainer(3 * STORAGE_MAX_THREADS)
         self._bucket = bucket
@@ -72,9 +35,11 @@ class MinIOStorage(Storage):
                 ):
                     yield File(object_.object_name, size=object_.size, md5=object_.etag)
             except InvalidResponseError:
-                if object_ is not None:
-                    start_after = object_.object_name
-                logger.error("[!] %s", start_after)  # TODO remove
+                if MINIO_RETRY_GENERATE:
+                    if object_ is not None:
+                        start_after = object_.object_name
+                else:
+                    raise
             else:
                 break
 
