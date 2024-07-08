@@ -1,3 +1,4 @@
+from .storage.ddl import DDLStorage
 from .storage.dropbox import DropboxStorage
 from .storage.ftp import FTPStorage
 from .storage.git import GitStorage
