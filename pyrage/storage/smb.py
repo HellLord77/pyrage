@@ -36,7 +36,9 @@ class SMBStorage(Storage):
                 if dir_.is_dir():
                     paths.append(dir_.path)
                 else:
-                    yield File(relpath(dir_.path, self._path), **File.stat(dir_.stat()))
+                    yield File(
+                        relpath(dir_.path, self._path), **File.get_kwargs(dir_.stat())
+                    )
 
     def _get_file(self, file: File) -> Readable:
         return open_file(self._path.joinpath(file.path), "rb")

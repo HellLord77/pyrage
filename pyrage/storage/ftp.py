@@ -50,7 +50,9 @@ class FTPStorage(Storage):
                     paths.append(path)
                 else:
                     # noinspection PyTypeChecker
-                    yield File(relpath(path, cwd), **File.stat(self._ftp.stat(path)))
+                    yield File(
+                        relpath(path, cwd), **File.get_kwargs(self._ftp.stat(path))
+                    )
 
     def _get_file(self, file: File) -> Readable:
         return self._ftp.open(self._ftp.getcwd() + self._ftp.sep + file.path, "rb")

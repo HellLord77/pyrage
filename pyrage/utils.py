@@ -93,8 +93,9 @@ class File(NamedTuple):
         return not self == other
 
     @staticmethod
-    def stat(stat: Stat) -> dict[str, Optional[int | float]]:
+    def get_kwargs(stat: Stat) -> dict[str, Optional[int | float]]:
         # noinspection PyUnresolvedReferences
         return {
-            field[3:]: getattr(stat, field, None) for field in Stat.__protocol_attrs__
+            field.removeprefix("st_"): getattr(stat, field, None)
+            for field in Stat.__protocol_attrs__
         }

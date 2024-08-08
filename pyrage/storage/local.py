@@ -28,7 +28,7 @@ class LocalStorage(Storage):
             if path.is_file():
                 yield File(
                     path.relative_to(self._path).as_posix(),
-                    **File.stat(path.stat()),
+                    **File.get_kwargs(path.stat()),
                     md5=_get_md5(path)
                 )
 
