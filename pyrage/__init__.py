@@ -9,7 +9,9 @@ from .storage.local import LocalStorage
 from .storage.minio import MinIOStorage
 from .storage.sftp import SFTPStorage
 from .storage.smb import SMBStorage
+from .storage.tar import TarStorage
 from .storage.webdav import WebDAVStorage
+from .storage.zip import ZipStorage
 
 from .utils import File
 from .utils import Readable
