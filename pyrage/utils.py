@@ -2,13 +2,44 @@ from typing import Iterator
 from typing import NamedTuple
 from typing import Optional
 from typing import Protocol
+from zlib import crc32
 
 from requests import Response
 
 
 class Hash(Protocol):
+    def digest(self) -> bytes:
+        pass
+
+    def hexdigest(self) -> str:
+        pass
+
     def update(self, data: bytes):
         pass
+
+
+class CRC32Hash(Hash):
+    def __init__(self, data: bytes = b"", *, value: Optional[int] = None):
+        if value is None:
+            value = crc32(data)
+        self._hash = value
+
+    @property
+    def name(self) -> str:
+        return "crc32"
+
+    @property
+    def digest_size(self) -> int:
+        return 4
+
+    def digest(self) -> bytes:
+        return self._hash.to_bytes(self.digest_size, "big")
+
+    def hexdigest(self) -> str:
+        return self.digest().hex()
+
+    def update(self, data: bytes):
+        self._hash = crc32(data, self._hash)
 
 
 class Readable(Protocol):
@@ -48,9 +79,20 @@ class Writable(Protocol):
         pass
 
 
+class WritableTee(Writable):
+    def __init__(self, *writables: Writable):
+        self._writables = writables
+
+    def write(self, data: bytes):
+        for writable in self._writables:
+            writable.write(data)
+
+
 class WritableHash(Protocol):
     # noinspection PyShadowingBuiltins
     def __init__(self, hash: Hash):
+        self.digest = hash.digest
+        self.hexdigest = hash.hexdigest
         self.write = hash.update
 
 
@@ -74,11 +116,12 @@ class File(NamedTuple):
     mtime: Optional[float] = None
     atime: Optional[float] = None
     ctime: Optional[float] = None
+    crc32: Optional[str] = None
     md5: Optional[str] = None
 
     def __eq__(self, other):
         if isinstance(other, File):
-            for field in ("size", "md5"):
+            for field in ("size", "crc32", "md5"):
                 # noinspection PyUnboundLocalVariable
                 if (
                     (value := getattr(self, field)) is not None

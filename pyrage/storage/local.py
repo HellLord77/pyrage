@@ -5,17 +5,20 @@ from tempfile import TemporaryDirectory
 from typing import Iterable
 
 from . import Storage
+from ..utils import CRC32Hash
 from ..utils import File
 from ..utils import Readable
 from ..utils import WritableHash
+from ..utils import WritableTee
 
 
-def _get_md5(path: Path) -> str:
-    md5_ = md5()
-    writable = WritableHash(md5_)
+def _get_hash(path: Path) -> tuple[str, str]:
+    crc32 = WritableHash(CRC32Hash())
+    md5_ = WritableHash(md5())
+    writable = WritableTee(crc32, md5_)
     with path.open("rb") as file:
         copyfileobj(file, writable)
-    return md5_.hexdigest()
+    return crc32.hexdigest(), md5_.hexdigest()
 
 
 class LocalStorage(Storage):
@@ -29,7 +32,7 @@ class LocalStorage(Storage):
                 yield File(
                     path.relative_to(self._path).as_posix(),
                     **File.get_kwargs(path.stat()),
-                    md5=_get_md5(path)
+                    **dict(zip(("crc32", "md5"), _get_hash(path)))
                 )
 
     def _get_file(self, file: File) -> Readable:

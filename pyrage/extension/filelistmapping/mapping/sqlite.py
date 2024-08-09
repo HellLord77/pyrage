@@ -19,6 +19,7 @@ class SqliteFileListMapping(FileListMapping):
                 mtime REAL,
                 atime REAL,
                 ctime REAL,
+                crc32 VARCHAR(8),
                 md5 VARCHAR(32)
             );
             """
@@ -66,8 +67,8 @@ class SqliteFileListMapping(FileListMapping):
     def __setitem__(self, key: str, value: File):
         self._mapping.execute(
             """
-            INSERT OR REPLACE INTO _ (path, size, mtime, atime, ctime, md5)
-            VALUES (?, ?, ?, ?, ?, ?);
+            INSERT OR REPLACE INTO _ (path, size, mtime, atime, ctime, crc32, md5)
+            VALUES (?, ?, ?, ?, ?, ?, ?);
             """,
             value,
         )
