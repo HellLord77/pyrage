@@ -43,7 +43,7 @@ class MinIOStorage(Storage):
             else:
                 break
 
-    def __get_file_list(self) -> Iterable[File]:
+    def __generate_file_list(self) -> Iterable[File]:
         prefixes = [""]
         while prefixes:
             for object_ in self._minio.list_objects(

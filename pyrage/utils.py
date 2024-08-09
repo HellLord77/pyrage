@@ -136,7 +136,7 @@ class File(NamedTuple):
         return not self == other
 
     @staticmethod
-    def get_kwargs(stat: Stat) -> dict[str, Optional[int | float]]:
+    def get_stat(stat: Stat) -> dict[str, Optional[int | float]]:
         # noinspection PyUnresolvedReferences
         return {
             field.removeprefix("st_"): getattr(stat, field, None)

@@ -31,8 +31,16 @@ class LocalStorage(Storage):
             if path.is_file():
                 yield File(
                     path.relative_to(self._path).as_posix(),
-                    **File.get_kwargs(path.stat()),
+                    **File.get_stat(path.stat()),
                     **dict(zip(("crc32", "md5"), _get_hash(path)))
+                )
+
+    def __generate_file_list(self) -> Iterable[File]:
+        for path in self._path.rglob("*"):
+            if path.is_file():
+                yield File(
+                    path.relative_to(self._path).as_posix(),
+                    **File.get_stat(path.stat())
                 )
 
     def _get_file(self, file: File) -> Readable:

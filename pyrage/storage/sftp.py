@@ -55,7 +55,7 @@ class SFTPStorage(Storage):
                     paths.append(path)
                 else:
                     # noinspection PyTypeChecker
-                    yield File(relpath(path, cwd), **File.get_kwargs(attr))
+                    yield File(relpath(path, cwd), **File.get_stat(attr))
 
     def _get_file(self, file: File) -> Readable:
         return self._sftp.open(file.path, "rb")

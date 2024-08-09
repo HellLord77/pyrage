@@ -37,7 +37,7 @@ class SMBStorage(Storage):
                     paths.append(dir_.path)
                 else:
                     yield File(
-                        relpath(dir_.path, self._path), **File.get_kwargs(dir_.stat())
+                        relpath(dir_.path, self._path), **File.get_stat(dir_.stat())
                     )
 
     def _get_file(self, file: File) -> Readable:
