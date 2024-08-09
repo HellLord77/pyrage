@@ -1,5 +1,3 @@
-git+https://github.com/python-cffi/cffi.git@v1.17.0
-
 tqdm
 urllib3
 requests
@@ -14,3 +12,6 @@ minio
 paramiko
 smbprotocol
 webdavclient3
+
+redis
+msgpack
