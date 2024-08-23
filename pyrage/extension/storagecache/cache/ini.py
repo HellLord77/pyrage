@@ -13,9 +13,7 @@ class INIStorageCache(StorageCache):
     def _dump_file_list(self):
         config = ConfigParser()
         config.optionxform = str
-        config["_"] = {
-            file.path: ",".join(map(repr, islice(file, 1, None))) for file in self
-        }
+        config["_"] = {file.path: file.encode() for file in self}
         with open(self._cache_path, "w") as cache:
             config.write(cache, False)
 
@@ -24,7 +22,7 @@ class INIStorageCache(StorageCache):
         config.optionxform = str
         with open(self._cache_path, "r") as cache:
             config.read_file(cache)
-        return (File(path, *literal_eval(file)) for path, file in config["_"].items())
+        return (File.decode(path, file) for path, file in config["_"].items())
 
 
 class INIStorageCachePretty(INIStorageCache):

@@ -1,5 +1,3 @@
-from ast import literal_eval
-from itertools import islice
 from typing import Iterator
 from typing import Optional
 
@@ -24,10 +22,10 @@ class RedisFileListMapping(FileListMapping):
         return map(bytes.decode, self._mapping.scan_iter())
 
     def __getitem__(self, key: str) -> File:
-        return File(key, *literal_eval(self._mapping[key].decode()))
+        return File.decode(key, self._mapping[key].decode())
 
     def __setitem__(self, key: str, value: File):
-        self._mapping[key] = ",".join(map(repr, islice(value, 1, None)))
+        self._mapping[key] = value.encode()
 
     def __delitem__(self, key: str):
         if not self._mapping.delete(key):

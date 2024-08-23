@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from itertools import islice
+from re import compile
 from typing import Iterator
 from typing import NamedTuple
 from typing import Optional
@@ -119,6 +123,8 @@ class File(NamedTuple):
     crc32: Optional[str] = None
     md5: Optional[str] = None
 
+    _PAT_FLOAT = compile(r"\d+\.\d+")
+
     def __eq__(self, other):
         if isinstance(other, File):
             for field in ("size", "crc32", "md5"):
@@ -134,6 +140,25 @@ class File(NamedTuple):
 
     def __ne__(self, other):
         return not self == other
+
+    def encode(self) -> str:
+        return ",".join(
+            "" if value is None else str(value) for value in islice(self, 1, None)
+        )
+
+    @classmethod
+    def decode(cls, path: str, values: str) -> File:
+        return cls(path, *map(cls._decode_value, values.split(",")))
+
+    @classmethod
+    def _decode_value(cls, value: str) -> Optional[int | float | str]:
+        if value == "":
+            value = None
+        elif value.isdigit():
+            value = int(value)
+        elif cls._PAT_FLOAT.fullmatch(value):
+            value = float(value)
+        return value
 
     @staticmethod
     def get_stat(stat: Stat) -> dict[str, Optional[int | float]]:

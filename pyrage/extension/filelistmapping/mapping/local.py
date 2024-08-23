@@ -1,8 +1,5 @@
 from base64 import b32decode
 from base64 import b32encode
-from csv import reader
-from csv import writer
-from itertools import islice
 from os import makedirs
 from os import remove
 from os import walk
@@ -12,7 +9,7 @@ from shutil import rmtree
 from tempfile import mkdtemp
 from typing import Iterator
 from typing import Optional
-from ast import literal_eval
+
 from . import FileListMapping
 from ....utils import File
 
@@ -45,13 +42,13 @@ class LocalFileListMapping(FileListMapping):
     def __getitem__(self, key: str) -> File:
         try:
             with open(join(self._path, _get_key(key))) as file:
-                return File(key, *literal_eval(file.read()))
+                return File.decode(key, file.read())
         except FileNotFoundError:
             raise KeyError(key)
 
     def __setitem__(self, key: str, value: File):
         with open(join(self._path, _get_key(key)), "w") as file:
-            file.write(",".join(map(repr, islice(value, 1, None))))
+            file.write(value.encode())
 
     def __delitem__(self, key: str):
         try:
