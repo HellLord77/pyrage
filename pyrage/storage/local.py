@@ -1,7 +1,7 @@
 from hashlib import md5
 from pathlib import Path
 from shutil import copyfileobj
-from tempfile import TemporaryDirectory
+from tempfile import mkdtemp
 from typing import Iterable
 
 from . import Storage
@@ -58,5 +58,4 @@ class LocalStorage(Storage):
 
 class TemporaryStorage(LocalStorage):
     def __init__(self):
-        self._temp = TemporaryDirectory()
-        super().__init__(self._temp.name)
+        super().__init__(mkdtemp())
