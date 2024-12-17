@@ -2,7 +2,7 @@ import os
 from typing import Final
 
 STORAGE_DRY_RUN: Final[bool] = os.getenv("STORAGE_DRY_RUN", "true").lower() == "true"
-STORAGE_MAX_THREADS: Final[int] = int(os.getenv("STORAGE_MAX_THREADS", "10"))
+STORAGE_MAX_THREADS: Final[int] = int(os.getenv("STORAGE_MAX_THREADS", "8"))
 
 FTP_INCLUDE_HIDDEN: Final[bool] = (
     os.getenv("FTP_INCLUDE_HIDDEN", "false").lower() == "true"
@@ -15,5 +15,5 @@ WEBDAV_DISABLE_CHECK: Final[bool] = (
 )
 
 MINIO_RETRY_GENERATE: Final[bool] = (
-    os.getenv("MINIO_RETRY_GENERATE", "true").lower() == "true"
+    os.getenv("MINIO_RETRY_GENERATE", "false").lower() == "true"
 )

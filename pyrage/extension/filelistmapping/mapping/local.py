@@ -1,5 +1,5 @@
-from base64 import b32decode
-from base64 import b32encode
+from base64 import urlsafe_b64decode
+from base64 import urlsafe_b64encode
 from os import makedirs
 from os import remove
 from os import walk
@@ -15,11 +15,11 @@ from ....utils import File
 
 
 def _get_key(path: str) -> str:
-    return b32encode(path.encode()).rstrip(b"=").decode()
+    return urlsafe_b64encode(path.encode()).rstrip(b"=").decode()
 
 
 def _get_path(key: str) -> str:
-    return b32decode(key.encode() + b"=" * (-len(key) % 8)).decode()
+    return urlsafe_b64decode(key.encode() + b"=" * (-len(key) % 8)).decode()
 
 
 class LocalFileListMapping(FileListMapping):
