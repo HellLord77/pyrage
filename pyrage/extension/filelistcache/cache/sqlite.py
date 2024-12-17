@@ -2,15 +2,15 @@ from itertools import starmap
 from sqlite3 import connect
 from typing import Iterator
 
-from . import StorageCache
+from . import FileListCache
 from ....utils import File
 
 
-class SqliteStorageCache(StorageCache):
+class SqliteFileListCache(FileListCache):
     EXTENSION = "db"
 
-    def _dump_file_list(self):
-        with connect(self._cache_path) as con:
+    def _dump(self, files: Iterator[File]):
+        with connect(self.path) as con:
             cur = con.cursor()
             cur.execute(
                 """
@@ -36,13 +36,13 @@ class SqliteStorageCache(StorageCache):
                 INSERT INTO _ (path, size, mtime, atime, ctime, crc32, md5, sha1)
                 VALUES (?, ?, ?, ?, ?, ?);
                 """,
-                self,
+                files,
             )
             cur.close()
         con.close()
 
-    def _load_file_list(self) -> Iterator[File]:
-        with connect(self._cache_path) as con:
+    def _load(self) -> Iterator[File]:
+        with connect(self.path) as con:
             yield from starmap(
                 File,
                 con.execute(

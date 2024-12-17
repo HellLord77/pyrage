@@ -16,5 +16,5 @@ def mapping(
     return type(
         f"{storage.__name__}_{file_list_mapping.__name__}",
         (StorageMapping, storage),
-        {"_file_list_mapping": file_list_mapping},
+        {"_t_file_list_mapping": file_list_mapping},
     )
