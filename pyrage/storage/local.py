@@ -1,4 +1,5 @@
 from hashlib import md5
+from hashlib import sha1
 from pathlib import Path
 from shutil import copyfileobj
 from tempfile import mkdtemp
@@ -12,13 +13,18 @@ from ..utils import WritableHash
 from ..utils import WritableTee
 
 
-def _get_hash(path: Path) -> tuple[str, str]:
+def _get_hash(path: Path) -> dict[str, str]:
     crc32 = WritableHash(CRC32Hash())
     md5_ = WritableHash(md5())
-    writable = WritableTee(crc32, md5_)
+    sha1_ = WritableHash(sha1())
+    writable = WritableTee(crc32, md5_, sha1_)
     with path.open("rb") as file:
         copyfileobj(file, writable)
-    return crc32.hexdigest(), md5_.hexdigest()
+    return {
+        "crc32": crc32.hexdigest(),
+        "md5": md5_.hexdigest(),
+        "sha1": sha1_.hexdigest(),
+    }
 
 
 class LocalStorage(Storage):
@@ -32,7 +38,7 @@ class LocalStorage(Storage):
                 yield File(
                     path.relative_to(self._path).as_posix(),
                     **File.get_stat(path.stat()),
-                    **dict(zip(("crc32", "md5"), _get_hash(path)))
+                    **_get_hash(path)
                 )
 
     def __generate_file_list(self) -> Iterable[File]:

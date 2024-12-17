@@ -17,12 +17,14 @@ class DDLStorage(Storage):
         size: Optional[int] = None,
         crc32: Optional[str] = None,
         md5: Optional[str] = None,
+        sha1: Optional[str] = None,
     ):
         self._url = url
         self._name = name
         self._size = size
         self._crc32 = crc32
         self._md5 = md5
+        self._sha1 = sha1
         self._session = Session()
         super().__init__()
 
@@ -35,7 +37,13 @@ class DDLStorage(Storage):
                 size = headers.get("Content-Length")
                 if size is not None:
                     self._size = int(size)
-        yield File(self._name, size=self._size, crc32=self._crc32, md5=self._md5)
+        yield File(
+            self._name,
+            size=self._size,
+            crc32=self._crc32,
+            md5=self._md5,
+            sha1=self._sha1,
+        )
 
     def _get_file(self, file: File) -> Readable:
         return ReadableResponse(self._session.get(self._url, stream=True))
