@@ -1,4 +1,5 @@
 from typing import Iterable
+from typing import Optional
 from urllib.parse import urlparse
 
 from minio import Minio
@@ -17,9 +18,17 @@ from ..utils import Readable
 
 
 class MinIOStorage(Storage):
-    def __init__(self, endpoint: str, bucket: str, keys: tuple[str, str] = ()):
+    def __init__(
+        self,
+        endpoint: str,
+        bucket: str,
+        access_key: Optional[str] = None,
+        secret_key: Optional[str] = None,
+    ):
         parts = urlparse(endpoint)
-        self._minio = Minio(parts.netloc, *keys, secure="https" == parts.scheme)
+        self._minio = Minio(
+            parts.netloc, access_key, secret_key, secure="https" == parts.scheme
+        )
         # noinspection PyProtectedMember
         self._minio._http.pools = RecentlyUsedContainer(3 * STORAGE_MAX_THREADS)
         self._bucket = bucket

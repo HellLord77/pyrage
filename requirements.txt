@@ -13,6 +13,7 @@ paramiko
 smbprotocol
 webdavclient3
 qbittorrent-api
+internetarchive
 
 redis
 msgpack
