@@ -12,6 +12,7 @@ minio
 paramiko
 smbprotocol
 webdavclient3
+qbittorrent-api
 
 redis
 msgpack
