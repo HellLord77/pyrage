@@ -29,10 +29,9 @@ logger = logging.getLogger(__name__)
 class Storage(metaclass=ABCMeta):
     _file_list: MutableMapping[str, File]
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *_, **__):
         self._file_list = {}
         self._file_list_proxy = MappingProxyType(self._file_list)
-        super().__init__(*args, **kwargs)
 
     def __repr__(self):
         return f"{type(self).__name__}({len(self)})"

@@ -6,7 +6,7 @@ from typing import Iterable
 from ....utils import File
 
 
-class FileListFilter(metaclass=ABCMeta):
+class FileFilter(metaclass=ABCMeta):
     def __init__(self, invert: bool = False):
         self._filter = filterfalse if invert else filter
 

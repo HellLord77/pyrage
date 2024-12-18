@@ -5,6 +5,7 @@ from .storage.git import GitStorage
 from .storage.gitea import GiteaStorage
 from .storage.github import GithubStorage
 from .storage.gitlab import GitlabStorage
+from .storage.internetarchive import InternetArchiveStorage
 from .storage.local import LocalStorage
 from .storage.minio import MinIOStorage
 from .storage.qbittorrent import QBittorrentStorage

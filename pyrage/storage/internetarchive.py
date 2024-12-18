@@ -38,11 +38,11 @@ class InternetArchiveStorage(Storage):
     def _get_file(self, file: File_) -> Readable:
         # noinspection PyTypeChecker
         return ReadableResponse(
-            File(self._item.identifier, file.path).download(return_responses=True)
+            File(self._item, file.path).download(return_responses=True)
         )
 
     def _set_file(self, file: File_, readable: Readable):
         upload(self._item.identifier, {file.path: readable})
 
     def _del_file(self, file: File_):
-        File(self._item.identifier, file.path).delete(True)
+        File(self._item, file.path).delete(True)

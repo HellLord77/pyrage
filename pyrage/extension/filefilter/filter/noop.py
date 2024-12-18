@@ -1,7 +1,7 @@
-from . import FileListFilter
+from . import FileFilter
 from ....utils import File
 
 
-class NoopFileListFilter(FileListFilter):
+class NoopFileFilter(FileFilter):
     def __call__(self, file: File) -> bool:
         return True
