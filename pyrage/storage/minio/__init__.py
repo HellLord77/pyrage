@@ -7,14 +7,10 @@ from minio.deleteobjects import DeleteObject
 from minio.error import InvalidResponseError
 from minio.helpers import MAX_PART_SIZE
 
-# noinspection PyProtectedMember
-from urllib3._collections import RecentlyUsedContainer
-
-from . import Storage
-from ..config import MINIO_RETRY_GENERATE
-from ..config import STORAGE_MAX_THREADS
-from ..utils import File
-from ..utils import Readable
+from .. import Storage
+from ...config import MINIO_RETRY_GENERATE
+from ...utils import File
+from ...utils import Readable
 
 
 class MinIOStorage(Storage):
@@ -29,8 +25,6 @@ class MinIOStorage(Storage):
         self._minio = Minio(
             parts.netloc, access_key, secret_key, secure="https" == parts.scheme
         )
-        # noinspection PyProtectedMember
-        self._minio._http.pools = RecentlyUsedContainer(3 * STORAGE_MAX_THREADS)
         self._bucket = bucket
         super().__init__()
 
@@ -42,7 +36,11 @@ class MinIOStorage(Storage):
                 for object_ in self._minio.list_objects(
                     self._bucket, recursive=True, start_after=start_after
                 ):
-                    yield File(object_.object_name, size=object_.size, md5=object_.etag)
+                    yield File(
+                        object_.object_name,
+                        size=object_.size,
+                        md5=object_.etag if len(object_.etag) == 32 else None,
+                    )
             except InvalidResponseError:
                 if MINIO_RETRY_GENERATE:
                     if object_ is not None:

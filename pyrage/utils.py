@@ -13,20 +13,18 @@ from requests import Response
 
 class Hash(Protocol):
     def digest(self) -> bytes:
-        pass
+        return bytes.fromhex(self.hexdigest())
 
     def hexdigest(self) -> str:
-        pass
+        return self.digest().hex()
 
     def update(self, data: bytes):
         pass
 
 
 class CRC32Hash(Hash):
-    def __init__(self, data: bytes = b"", *, value: Optional[int] = None):
-        if value is None:
-            value = crc32(data)
-        self._hash = value
+    def __init__(self, data: bytes = b""):
+        self._hash = crc32(data)
 
     @property
     def name(self) -> str:
@@ -38,9 +36,6 @@ class CRC32Hash(Hash):
 
     def digest(self) -> bytes:
         return self._hash.to_bytes(self.digest_size, "big")
-
-    def hexdigest(self) -> str:
-        return self.digest().hex()
 
     def update(self, data: bytes):
         self._hash = crc32(data, self._hash)
