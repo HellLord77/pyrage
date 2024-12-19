@@ -1,3 +1,4 @@
+from hashlib import md5
 from typing import Iterable
 from typing import Optional
 from urllib.parse import urlparse
@@ -7,10 +8,48 @@ from minio.deleteobjects import DeleteObject
 from minio.error import InvalidResponseError
 from minio.helpers import MAX_PART_SIZE
 
-from .. import Storage
-from ...config import MINIO_RETRY_GENERATE
-from ...utils import File
-from ...utils import Readable
+from . import Storage
+from ..config import MINIO_RETRY_GENERATE
+from ..utils import File
+from ..utils import Hash
+from ..utils import Readable
+
+
+class _MinIOCompositeHash(Hash):
+    def __init__(self, data: bytes = b""):
+        self._hash = md5()
+        self._part_count = 0
+        self._part_size = 0
+        self._part_hash = md5()
+        self.update(data)
+
+    @property
+    def name(self) -> str:
+        return "etag"
+
+    @property
+    def digest_size(self) -> int:
+        return -1
+
+    def hexdigest(self) -> str:
+        if self._part_size:
+            self._hash.update(self._part_hash.digest())
+            self._part_count += 1
+            self._part_size = 0
+        return f"{self._hash.hexdigest()}-{self._part_count}"
+
+    def update(self, data: bytes):
+        while data:
+            size = MAX_PART_SIZE - self._part_size
+            part = data[:size]
+            self._part_size += len(part)
+            self._part_hash.update(part)
+            if len(part) == size:
+                self._hash.update(self._part_hash.digest())
+                self._part_count += 1
+                self._part_size = 0
+                self._part_hash = md5()
+            data = data[size:]
 
 
 class MinIOStorage(Storage):
@@ -39,6 +78,7 @@ class MinIOStorage(Storage):
                     yield File(
                         object_.object_name,
                         size=object_.size,
+                        mtime=object_.last_modified.timestamp(),
                         md5=object_.etag if len(object_.etag) == 32 else None,
                     )
             except InvalidResponseError:
