@@ -25,7 +25,7 @@ class INIFileListCache(FileListCache):
         return (File.decode(path, file) for path, file in config["_"].items())
 
 
-class INIFileListCachePretty(INIFileListCache):
+class PrettyINIFileListCache(INIFileListCache):
     def _dump(self, files: Iterator[File]):
         config = ConfigParser()
         config.optionxform = str
@@ -34,7 +34,7 @@ class INIFileListCachePretty(INIFileListCache):
             config.write(cache)
 
 
-class INIFileListCacheCompat(INIFileListCache):
+class CompatINIFileListCache(INIFileListCache):
     def _dump(self, files: Iterator[File]):
         config = ConfigParser()
         config.update(

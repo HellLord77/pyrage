@@ -22,7 +22,7 @@ class MsgPackFileListCache(FileListCache):
             return starmap(File, (unpack(cache)))
 
 
-class MsgPackFileListCacheStreaming(MsgPackFileListCache):
+class StreamingMsgPackFileListCache(MsgPackFileListCache):
     def _dump(self, files: Iterator[File]):
         packer = Packer()
         with open(self.path, "wb") as cache:

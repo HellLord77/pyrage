@@ -19,13 +19,13 @@ class JSONFileListCache(FileListCache):
             return starmap(File, load(cache))
 
 
-class JSONFileListCachePretty(JSONFileListCache):
+class PrettyJSONFileListCache(JSONFileListCache):
     def _dump(self, files: Iterator[File]):
         with open(self.path, "w") as cache:
             dump(tuple(files), cache, indent=2)
 
 
-class JSONFileListCacheCompat(JSONFileListCache):
+class CompatJSONFileListCache(JSONFileListCache):
     def _dump(self, files: Iterator[File]):
         with open(self.path, "w") as cache:
             dump(tuple(file._asdict() for file in files), cache, indent=2)

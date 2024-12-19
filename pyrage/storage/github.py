@@ -24,7 +24,7 @@ class GithubStorage(Storage):
         if sha is None:
             sha = self._repo.default_branch
         self._sha = sha
-        self._session = Session()
+        self._session = Session()  # TODO use sdk
         super().__init__()
 
     def _generate_file_list(self) -> Iterable[File]:  # TODO pagination
@@ -49,7 +49,7 @@ class GithubStorage(Storage):
         raise NotImplementedError
 
 
-class GiteaStorage(GithubStorage):
+class GiteaGithubStorage(GithubStorage):
     FMT_RAW_URL = "{}/{}/raw/branch/{}/{}"
 
     def __init__(

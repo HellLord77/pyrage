@@ -62,6 +62,6 @@ class LocalStorage(Storage):
         self._path.joinpath(file.path).unlink()
 
 
-class TemporaryStorage(LocalStorage):
+class TemporaryLocalStorage(LocalStorage):
     def __init__(self):
         super().__init__(mkdtemp())

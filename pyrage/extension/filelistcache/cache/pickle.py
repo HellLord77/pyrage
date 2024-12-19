@@ -20,7 +20,7 @@ class PickleFileListCache(FileListCache):
             return load(cache)
 
 
-class PickleFileListCacheStreaming(PickleFileListCache):
+class StreamingPickleFileListCache(PickleFileListCache):
     def _dump(self, files: Iterator[File]):
         with open(self.path, "wb") as cache:
             any(dump(tuple(file), cache) for file in files)
