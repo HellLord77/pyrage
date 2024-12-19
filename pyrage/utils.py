@@ -23,8 +23,10 @@ class Hash(Protocol):
 
 
 class CRC32Hash(Hash):
-    def __init__(self, data: bytes = b""):
-        self._hash = crc32(data)
+    def __init__(self, data: bytes = b"", *, value: Optional[int] = None):
+        if value is None:
+            value = crc32(data)
+        self._hash = value
 
     @property
     def name(self) -> str:

@@ -3,7 +3,6 @@ from typing import Iterable
 from typing import Optional
 
 from git import Repo
-from requests import Session
 
 from . import Storage
 from ..utils import File
@@ -14,7 +13,6 @@ class GitStorage(Storage):
     def __init__(self, path: str, rev: Optional[str] = None):
         self._repo = Repo(path)
         self._rev = rev
-        self._session = Session()
         super().__init__()
 
     def _generate_file_list(self) -> Iterable[File]:

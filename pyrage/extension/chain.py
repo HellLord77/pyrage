@@ -11,7 +11,7 @@ from .utils import TStorage
 # noinspection PyShadowingBuiltins,PyArgumentList
 @lru_cache
 def cwd(storage: type[TStorage], dir: str) -> type[TStorage]:
-    extension_kwargs = {"path_prefix": f"{dir}{sep}"}
+    extension_kwargs = {"path_prefix": dir + sep}
     storage_cwd = transformer(
         filter(storage, PathPrefixFileFilter), PathPrefixFileTransformer
     )
