@@ -15,7 +15,7 @@ class QBittorrentStorage(Storage):
         port: int = 8080,
         username: Optional[str] = None,
         password: Optional[str] = None,
-    ):
+    ):  # TODO torrent
         self._client = Client(host, port, username, password)
         super().__init__()
 
