@@ -8,13 +8,15 @@ GitPython
 py-gitea
 PyGithub
 python-gitlab
-minio
+internetarchive
+boto3
 paramiko
 smbprotocol
 webdavclient3
-qbittorrent-api
-internetarchive
-boto3
 
-redis
+minio
+pymongo
+qbittorrent-api
+
 msgpack
+redis
