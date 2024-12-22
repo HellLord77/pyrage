@@ -2,13 +2,17 @@ from __future__ import annotations
 
 from itertools import islice
 from re import compile
+from typing import Iterable
 from typing import Iterator
 from typing import NamedTuple
 from typing import Optional
 from typing import Protocol
+from typing import TypeVar
 from zlib import crc32
 
 from requests import Response
+
+T = TypeVar("T")
 
 
 class Hash(Protocol):
@@ -54,7 +58,9 @@ class ReadableIterator(Readable):
         self._iterator = iterator
 
     def read(self, size: int = -1) -> bytes:
-        while size < 0 or len(self._buffer) < size:
+        if size < 0:
+            size = None
+        while size is None or len(self._buffer) < size:
             try:
                 self._buffer += next(self._iterator)
             except StopIteration:
@@ -165,3 +171,14 @@ class File(NamedTuple):
             field.removeprefix("st_"): getattr(stat, field, None)
             for field in Stat.__protocol_attrs__
         }
+
+
+def iter_join(separator: T, iterable: Iterable[T]) -> Iterable[T]:
+    iterator = iter(iterable)
+    try:
+        yield next(iterator)
+    except StopIteration:
+        return
+    for item in iterator:
+        yield separator
+        yield item

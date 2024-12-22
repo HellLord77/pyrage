@@ -9,13 +9,13 @@ py-gitea
 PyGithub
 python-gitlab
 internetarchive
+pymongo
 boto3
 paramiko
 smbprotocol
 webdavclient3
 
 minio
-pymongo
 qbittorrent-api
 
 msgpack

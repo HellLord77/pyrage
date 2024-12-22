@@ -1,1 +1,115 @@
-raise NotImplementedError
+from io import BytesIO
+from itertools import chain
+from posixpath import join
+from posixpath import split
+from typing import Iterable
+from typing import Optional
+
+from bson import ObjectId
+from bson import decode
+from bson import encode
+from bson.json_util import DEFAULT_JSON_OPTIONS
+from bson.json_util import JSONOptions
+from bson.json_util import dumps
+from bson.json_util import loads
+from pymongo import MongoClient
+
+from . import Storage
+from ..utils import File
+from ..utils import Readable
+from ..utils import ReadableIterator
+from ..utils import iter_join
+
+
+class MongoStorage(Storage):
+    def __init__(
+        self,
+        database: Optional[str] = None,
+        uri: Optional[str] = None,
+    ):
+        client = MongoClient(uri)
+        self._db = (
+            client.get_default_database()
+            if database is None
+            else client.get_database(database)
+        )
+        super().__init__()
+
+    def _generate_file_list(self) -> Iterable[File]:
+        for name in self._db.list_collection_names():
+            for document in self._db.get_collection(name).find():
+                yield File(join(name, str(document["_id"])))
+
+    def _get_file(self, file: File) -> Readable:
+        name, id_ = split(file.path)
+        collection = self._db.get_collection(name)
+        document = collection.find_one(ObjectId(id_))
+        del document["_id"]
+        return BytesIO(encode(document))
+
+    def _set_file(self, file: File, readable: Readable):
+        name, id_ = split(file.path)
+        collection = self._db.get_collection(name)
+        document = decode(readable.read())
+        document["_id"] = ObjectId(id_)
+        collection.insert_one(document)
+
+    def _del_file(self, file: File):
+        name, id_ = split(file.path)
+        collection = self._db.get_collection(name)
+        collection.delete_one({"_id": ObjectId(id_)})
+
+
+class JSONMongoStorage(Storage):
+    def __init__(
+        self,
+        database: Optional[str] = None,
+        uri: Optional[str] = None,
+        json_options: JSONOptions = DEFAULT_JSON_OPTIONS,
+        pretty: bool = False,
+    ):
+        client = MongoClient(uri)
+        self._db = (
+            client.get_default_database()
+            if database is None
+            else client.get_database(database)
+        )
+        self._json_options = json_options
+        self._pretty = pretty
+        super().__init__()
+
+    def _generate_file_list(self) -> Iterable[File]:
+        for name in self._db.list_collection_names():
+            yield File(name)
+
+    def _get_file(self, file: File) -> Readable:
+        if self._pretty:
+            separator = b",\n"
+            kwargs = {"indent": 2}
+        else:
+            separator = b","
+            kwargs = {"separators": (",", ":")}
+        return ReadableIterator(
+            chain(
+                (b"[",),
+                iter_join(
+                    separator,
+                    (
+                        dumps(
+                            document,
+                            json_options=self._json_options,
+                            **kwargs,
+                        ).encode()
+                        for document in self._db.get_collection(file.path).find()
+                    ),
+                ),
+                (b"]",),
+            )
+        )
+
+    def _set_file(self, file: File, readable: Readable):
+        collection = self._db.get_collection(file.path)
+        collection.insert_many(loads(readable.read(), json_options=self._json_options))
+
+    def _del_file(self, file: File):
+        self._db.drop_collection(file.path)
