@@ -60,45 +60,34 @@ class MongoStorage(Storage):
         collection.delete_one({"_id": ObjectId(id_)})
 
 
-class JSONMongoStorage(Storage):
+class JSONMongoStorage(MongoStorage):
+    SEP = b","
+    KWARGS = {"separators": (",", ":")}
+
     def __init__(
         self,
         database: Optional[str] = None,
         uri: Optional[str] = None,
         json_options: JSONOptions = DEFAULT_JSON_OPTIONS,
-        pretty: bool = False,
     ):
-        client = MongoClient(uri)
-        self._db = (
-            client.get_default_database()
-            if database is None
-            else client.get_database(database)
-        )
         self._json_options = json_options
-        self._pretty = pretty
-        super().__init__()
+        super().__init__(database, uri)
 
     def _generate_file_list(self) -> Iterable[File]:
         for name in self._db.list_collection_names():
             yield File(name)
 
     def _get_file(self, file: File) -> Readable:
-        if self._pretty:
-            separator = b",\n"
-            kwargs = {"indent": 2}
-        else:
-            separator = b","
-            kwargs = {"separators": (",", ":")}
         return ReadableIterator(
             chain(
                 (b"[",),
                 iter_join(
-                    separator,
+                    self.SEP,
                     (
                         dumps(
                             document,
                             json_options=self._json_options,
-                            **kwargs,
+                            **self.KWARGS,
                         ).encode()
                         for document in self._db.get_collection(file.path).find()
                     ),
@@ -113,3 +102,8 @@ class JSONMongoStorage(Storage):
 
     def _del_file(self, file: File):
         self._db.drop_collection(file.path)
+
+
+class PrettyJSONMongoStorage(JSONMongoStorage):
+    SEP = b",\n"
+    KWARGS = {"indent": 2}

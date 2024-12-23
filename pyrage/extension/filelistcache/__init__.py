@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from .cache import FileListCache
 from .cache.csv import CSVFileListCache
 from .cache.ini import INIFileListCache
 from .cache.json import JSONFileListCache
@@ -11,7 +12,7 @@ from ..utils import TStorage
 
 @lru_cache
 def cache(
-    storage: type[TStorage], file_list_cache: type[StorageCache] = JSONFileListCache
+    storage: type[TStorage], file_list_cache: type[FileListCache] = JSONFileListCache
 ) -> type[TStorage]:
     # noinspection PyTypeChecker
     return type(
