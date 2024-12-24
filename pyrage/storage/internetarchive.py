@@ -1,12 +1,12 @@
 from typing import Iterable
 from typing import Optional
 
-from internetarchive import File
+from internetarchive import File as File_
 from internetarchive import get_item
 from internetarchive import upload
 
 from . import Storage
-from ..utils import File as File_
+from ..utils import File
 from ..utils import Readable
 from ..utils import ReadableResponse
 
@@ -23,10 +23,10 @@ class InternetArchiveStorage(Storage):
         )
         super().__init__()
 
-    def _generate_file_list(self) -> Iterable[File_]:
+    def _generate_file_list(self) -> Iterable[File]:
         for file in self._item.get_files():
             if file.metadata != "Metadata":
-                yield File_(
+                yield File(
                     file.name,
                     size=file.size,
                     mtime=file.mtime,
@@ -35,14 +35,14 @@ class InternetArchiveStorage(Storage):
                     sha1=file.sha1,
                 )
 
-    def _get_file(self, file: File_) -> Readable:
+    def _get_file(self, file: File) -> Readable:
         # noinspection PyTypeChecker
         return ReadableResponse(
-            File(self._item, file.path).download(return_responses=True)
+            File_(self._item, file.path).download(return_responses=True)
         )
 
-    def _set_file(self, file: File_, readable: Readable):
+    def _set_file(self, file: File, readable: Readable):
         upload(self._item.identifier, {file.path: readable})
 
-    def _del_file(self, file: File_):
-        File(self._item, file.path).delete(True)
+    def _del_file(self, file: File):
+        File_(self._item, file.path).delete(True)
