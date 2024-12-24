@@ -1,0 +1,10 @@
+message File {
+  required string path = 1;
+  optional int64 size = 2;
+  optional double mtime = 3;
+  optional double atime = 4;
+  optional double ctime = 5;
+  optional string crc32 = 6;
+  optional string md5 = 7;
+  optional string sha1 = 8;
+}

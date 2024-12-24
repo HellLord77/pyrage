@@ -18,5 +18,6 @@ pymongo
 minio
 qbittorrent-api
 
+protobuf
 msgpack
 redis
