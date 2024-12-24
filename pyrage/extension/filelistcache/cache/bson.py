@@ -1,4 +1,5 @@
-from typing import Iterator, Iterable
+from typing import Iterable
+from typing import Iterator
 
 from bson import decode
 from bson import decode_file_iter

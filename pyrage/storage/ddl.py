@@ -1,4 +1,5 @@
-from typing import Optional, Iterable
+from typing import Iterable
+from typing import Optional
 from urllib.parse import urlparse
 
 from requests import Session
