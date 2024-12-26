@@ -3,7 +3,7 @@ from typing import Iterator
 
 from google.protobuf.json_format import MessageToDict
 
-from .file_pb2 import File as File_
+from .out.file_pb2 import File as File_
 from .. import FileListCache
 from .....utils import File
 
