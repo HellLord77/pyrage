@@ -1,4 +1,5 @@
 from tarfile import TarFile
+from typing import BinaryIO
 from typing import Iterable
 
 from . import Storage
@@ -7,8 +8,8 @@ from ..utils import Readable
 
 
 class TarStorage(Storage):
-    def __init__(self, path: str):
-        self._tar = TarFile(path)
+    def __init__(self, file: str | BinaryIO):
+        self._tar = TarFile(file) if isinstance(file, str) else TarFile(fileobj=file)
         super().__init__()
 
     def _generate_file_list(self) -> Iterable[File]:

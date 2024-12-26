@@ -1,6 +1,7 @@
 from datetime import datetime
 from shutil import copyfileobj
 from threading import Lock
+from typing import BinaryIO
 from typing import Iterable
 from typing import Optional
 from zipfile import ZipFile
@@ -12,8 +13,8 @@ from ..utils import Readable
 
 
 class ZipStorage(Storage):
-    def __init__(self, path: str, pwd: Optional[bytes] = None):
-        self._zip = ZipFile(path, "a")
+    def __init__(self, file: str | BinaryIO, pwd: Optional[bytes] = None):
+        self._zip = ZipFile(file, "a")
         self._zip.setpassword(pwd)
         self._lock = Lock()
         super().__init__()
@@ -32,8 +33,8 @@ class ZipStorage(Storage):
         return self._zip.open(file.path)
 
     def _set_file(self, file: File, readable: Readable):
-        with self._lock, self._zip.open(file.path, "w") as file:
-            copyfileobj(readable, file)
+        with self._lock, self._zip.open(file.path, "w") as file_:
+            copyfileobj(readable, file_)
 
     def _del_file(self, file: File):
         raise NotImplementedError
