@@ -1,0 +1,16 @@
+table File {
+  path:string;
+  size:long;
+  mtime:double;
+  atime:double;
+  ctime:double;
+  crc32:string;
+  md5:string;
+  sha1:string;
+}
+
+table Files {
+  files:[File];
+}
+
+root_type Files;
