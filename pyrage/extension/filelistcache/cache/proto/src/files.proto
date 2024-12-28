@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+message Files {
+  message File {
+    int64 size = 1;
+    double mtime = 2;
+    double atime = 3;
+    double ctime = 4;
+    string crc32 = 5;
+    string md5 = 6;
+    string sha1 = 7;
+    }
+
+  map<string, File> files = 1;
+}
