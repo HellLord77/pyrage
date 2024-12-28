@@ -7,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import as_completed
 from functools import cache
 from functools import partial
+from io import BytesIO
 from types import MappingProxyType
 from typing import Any
 from typing import Callable
@@ -93,6 +94,9 @@ class Storage(metaclass=ABCMeta):
 
     def set_file(self, file: File, readable: Readable):
         _run(partial(self._set_file, file, readable))
+
+    def set_file_data(self, file: File, data: bytes):
+        self.set_file(file, BytesIO(data))
 
     @abstractmethod
     def _del_file(self, file: File):

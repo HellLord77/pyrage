@@ -14,11 +14,11 @@ class ProtoFileListCache(FileListCache):
     def _dump(self, files: Iterable[File]):
         files_ = Files()
         for file in files:
-            kwargs = file._asdict()
-            file_ = files_.files[kwargs.pop("path")]
-            for key, value in kwargs.items():
+            file_ = file._asdict()
+            file__ = files_.files[file_.pop("path")]
+            for field, value in file_.items():
                 if value is not None:
-                    setattr(file_, key, value)
+                    setattr(file__, field, value)
         with open(self.path, "wb") as cache:
             cache.write(files_.SerializeToString())
 

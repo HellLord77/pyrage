@@ -45,7 +45,7 @@ class S3Storage(Storage):
                     content["Key"],
                     size=content["Size"],
                     mtime=content["LastModified"].timestamp(),
-                    md5=content["ETag"] if len(content["ETag"]) == 32 else None,
+                    md5=etag if len(etag := content["ETag"]) == 32 else None,
                 )
 
     def _get_file(self, file: File) -> Readable:
