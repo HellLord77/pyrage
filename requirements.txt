@@ -9,16 +9,18 @@ py-gitea
 PyGithub
 python-gitlab
 internetarchive
+minio
 boto3
 paramiko
 smbprotocol
+steam[client] @ git+https://github.com/solsticegamestudios/steam.git@v1.6.1
 webdavclient3
-
-pymongo
-minio
-qbittorrent-api
 
 flatbuffers
 protobuf
 msgpack
 redis
+
+docker
+pymongo
+qbittorrent-api
