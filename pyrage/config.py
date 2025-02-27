@@ -17,3 +17,7 @@ WEBDAV_DISABLE_CHECK: Final[bool] = (
 MINIO_RETRY_GENERATE: Final[bool] = (
     os.getenv("MINIO_RETRY_GENERATE", "false").lower() == "true"
 )
+
+STEAM_CACHE_MANIFESTS: Final[bool] = (
+    os.getenv("STEAM_CACHE_MANIFESTS", "true").lower() == "true"
+)
