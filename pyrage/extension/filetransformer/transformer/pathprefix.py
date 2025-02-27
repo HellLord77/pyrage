@@ -1,5 +1,4 @@
 from . import FileTransformer
-
 from ....utils import File
 
 
