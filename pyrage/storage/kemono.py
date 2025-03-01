@@ -1,4 +1,5 @@
 from datetime import datetime
+from os.path import splitext
 from typing import Iterable
 
 from requests import Session
@@ -19,18 +20,22 @@ class KemonoStorage(Storage):
         self._session = Session()
         super().__init__()
 
-    def _file(self, path: str, ctime: float) -> File:
+    def _file(self, file: dict[str, str]) -> File:
+        name = file["path"][7:]
+        sha256 = splitext(name)[0]
         if KEMONO_EXTEND_GENERATE:
-            response = self._session.head(f"{self.SERVER}{path}", allow_redirects=True)
+            response = self._session.get(f"{self.SERVER}/api/v1/search_hash/{sha256}")
             response.raise_for_status()
-            size = int(response.headers["Content-Length"])
-            mtime = datetime.strptime(
-                response.headers["Last-Modified"], "%a, %d %b %Y %H:%M:%S %Z"
-            ).timestamp()
+            json = response.json()
+            return File(
+                f"{sha256}{json["ext"]}",
+                size=json["size"],
+                mtime=datetime.fromisoformat(json["mtime"]).timestamp(),
+                ctime=datetime.fromisoformat(json["ctime"]).timestamp(),
+                sha256=sha256,
+            )
         else:
-            size = None
-            mtime = None
-        return File(path[1:], size=size, mtime=mtime, ctime=ctime)
+            return File(name, sha256=sha256)
 
     def _generate_file_list(self) -> Iterable[File]:
         offset = 0
@@ -44,19 +49,21 @@ class KemonoStorage(Storage):
             response.raise_for_status()
             json = response.json()
             for result in json["results"]:
-                ctime = datetime.fromisoformat(result["published"]).timestamp()
                 file = result["file"]
                 if file:
-                    yield self._file(file["path"], ctime)
+                    yield self._file(file)
                 for attachment in result["attachments"]:
-                    yield self._file(attachment["path"], ctime)
+                    yield self._file(attachment)
             count = json["props"]["count"]
             limit = json["props"]["limit"]
             offset += limit
 
     def _get_file(self, file: File) -> Readable:
         return ReadableResponse(
-            self._session.get(f"{self.SERVER}/{file.path}", stream=True)
+            self._session.get(
+                f"{self.SERVER}/{file.path[:2]}/{file.path[2:4]}/{file.path}",
+                stream=True,
+            )
         )
 
     def _set_file(self, file: File, readable: Readable):
