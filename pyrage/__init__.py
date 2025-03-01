@@ -6,6 +6,7 @@ from .storage.gitea import GiteaStorage
 from .storage.github import GithubStorage
 from .storage.gitlab import GitlabStorage
 from .storage.internetarchive import InternetArchiveStorage
+from .storage.kemono import KemonoStorage
 from .storage.local import LocalStorage
 from .storage.minio import MinIOStorage
 from .storage.s3 import S3Storage

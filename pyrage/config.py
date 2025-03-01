@@ -21,3 +21,7 @@ MINIO_RETRY_GENERATE: Final[bool] = (
 STEAM_CACHE_MANIFESTS: Final[bool] = (
     os.getenv("STEAM_CACHE_MANIFESTS", "true").lower() == "true"
 )
+
+KEMONO_EXTEND_GENERATE: Final[bool] = (
+    os.getenv("KEMONO_EXTEND_GENERATE", "false").lower() == "true"
+)
