@@ -1,5 +1,6 @@
 from hashlib import md5
 from hashlib import sha1
+from hashlib import sha256
 from pathlib import Path
 from shutil import copyfileobj
 from tempfile import mkdtemp
@@ -17,13 +18,15 @@ def _get_hash(path: Path) -> dict[str, str]:
     crc32 = WritableHash(CRC32Hash())
     md5_ = WritableHash(md5())
     sha1_ = WritableHash(sha1())
-    writable = WritableTee(crc32, md5_, sha1_)
+    sha256_ = WritableHash(sha256())
+    writable = WritableTee(crc32, md5_, sha1_, sha256_)
     with path.open("rb") as file:
         copyfileobj(file, writable)
     return {
         "crc32": crc32.hexdigest(),
         "md5": md5_.hexdigest(),
         "sha1": sha1_.hexdigest(),
+        "sha256": sha256_.hexdigest(),
     }
 
 

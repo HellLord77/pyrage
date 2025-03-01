@@ -2,12 +2,8 @@
 
 # namespace:
 
-from typing import Optional
-
 import flatbuffers
 from flatbuffers.compat import import_numpy
-
-from .File import File
 
 np = import_numpy()
 
@@ -16,54 +12,77 @@ class Files(object):
     __slots__ = ["_tab"]
 
     @classmethod
-    def GetRootAs(cls, buf, offset: int = 0):
+    def GetRootAs(cls, buf, offset=0):
         n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, offset)
         x = Files()
         x.Init(buf, n + offset)
         return x
 
+    @classmethod
+    def GetRootAsFiles(cls, buf, offset=0):
+        """This method is deprecated. Please switch to GetRootAs."""
+        return cls.GetRootAs(buf, offset)
+
     # Files
-    def Init(self, buf: bytes, pos: int):
+    def Init(self, buf, pos):
         self._tab = flatbuffers.table.Table(buf, pos)
 
     # Files
-    def Files(self, j: int) -> Optional[File]:
+    def Files(self, j):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
         if o != 0:
             x = self._tab.Vector(o)
             x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 4
             x = self._tab.Indirect(x)
+            from File import File
+
             obj = File()
             obj.Init(self._tab.Bytes, x)
             return obj
         return None
 
     # Files
-    def FilesLength(self) -> int:
+    def FilesLength(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
         if o != 0:
             return self._tab.VectorLen(o)
         return 0
 
     # Files
-    def FilesIsNone(self) -> bool:
+    def FilesIsNone(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
         return o == 0
 
 
-def Start(builder: flatbuffers.Builder):
+def FilesStart(builder):
     builder.StartObject(1)
 
 
-def AddFiles(builder: flatbuffers.Builder, files: int):
+def Start(builder):
+    FilesStart(builder)
+
+
+def FilesAddFiles(builder, files):
     builder.PrependUOffsetTRelativeSlot(
         0, flatbuffers.number_types.UOffsetTFlags.py_type(files), 0
     )
 
 
-def StartFilesVector(builder, numElems: int) -> int:
+def AddFiles(builder, files):
+    FilesAddFiles(builder, files)
+
+
+def FilesStartFilesVector(builder, numElems):
     return builder.StartVector(4, numElems, 4)
 
 
-def End(builder: flatbuffers.Builder) -> int:
+def StartFilesVector(builder, numElems):
+    return FilesStartFilesVector(builder, numElems)
+
+
+def FilesEnd(builder):
     return builder.EndObject()
+
+
+def End(builder):
+    return FilesEnd(builder)

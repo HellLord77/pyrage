@@ -2,8 +2,6 @@
 
 # namespace:
 
-from typing import Optional
-
 import flatbuffers
 from flatbuffers.compat import import_numpy
 
@@ -14,18 +12,23 @@ class File(object):
     __slots__ = ["_tab"]
 
     @classmethod
-    def GetRootAs(cls, buf, offset: int = 0):
+    def GetRootAs(cls, buf, offset=0):
         n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, offset)
         x = File()
         x.Init(buf, n + offset)
         return x
 
+    @classmethod
+    def GetRootAsFile(cls, buf, offset=0):
+        """This method is deprecated. Please switch to GetRootAs."""
+        return cls.GetRootAs(buf, offset)
+
     # File
-    def Init(self, buf: bytes, pos: int):
+    def Init(self, buf, pos):
         self._tab = flatbuffers.table.Table(buf, pos)
 
     # File
-    def Path(self) -> Optional[str]:
+    def Path(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
         if o != 0:
             return self._tab.String(o + self._tab.Pos)
@@ -66,70 +69,127 @@ class File(object):
         return 0.0
 
     # File
-    def Crc32(self) -> Optional[str]:
+    def Crc32(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(14))
         if o != 0:
             return self._tab.String(o + self._tab.Pos)
         return None
 
     # File
-    def Md5(self) -> Optional[str]:
+    def Md5(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(16))
         if o != 0:
             return self._tab.String(o + self._tab.Pos)
         return None
 
     # File
-    def Sha1(self) -> Optional[str]:
+    def Sha1(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(18))
         if o != 0:
             return self._tab.String(o + self._tab.Pos)
         return None
 
+    # File
+    def Sha256(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
+        if o != 0:
+            return self._tab.String(o + self._tab.Pos)
+        return None
 
-def Start(builder: flatbuffers.Builder):
-    builder.StartObject(8)
+
+def FileStart(builder):
+    builder.StartObject(9)
 
 
-def AddPath(builder: flatbuffers.Builder, path: int):
+def Start(builder):
+    FileStart(builder)
+
+
+def FileAddPath(builder, path):
     builder.PrependUOffsetTRelativeSlot(
         0, flatbuffers.number_types.UOffsetTFlags.py_type(path), 0
     )
 
 
-def AddSize(builder: flatbuffers.Builder, size: int):
+def AddPath(builder, path):
+    FileAddPath(builder, path)
+
+
+def FileAddSize(builder, size):
     builder.PrependInt64Slot(1, size, 0)
 
 
-def AddMtime(builder: flatbuffers.Builder, mtime: float):
+def AddSize(builder, size):
+    FileAddSize(builder, size)
+
+
+def FileAddMtime(builder, mtime):
     builder.PrependFloat64Slot(2, mtime, 0.0)
 
 
-def AddAtime(builder: flatbuffers.Builder, atime: float):
+def AddMtime(builder, mtime):
+    FileAddMtime(builder, mtime)
+
+
+def FileAddAtime(builder, atime):
     builder.PrependFloat64Slot(3, atime, 0.0)
 
 
-def AddCtime(builder: flatbuffers.Builder, ctime: float):
+def AddAtime(builder, atime):
+    FileAddAtime(builder, atime)
+
+
+def FileAddCtime(builder, ctime):
     builder.PrependFloat64Slot(4, ctime, 0.0)
 
 
-def AddCrc32(builder: flatbuffers.Builder, crc32: int):
+def AddCtime(builder, ctime):
+    FileAddCtime(builder, ctime)
+
+
+def FileAddCrc32(builder, crc32):
     builder.PrependUOffsetTRelativeSlot(
         5, flatbuffers.number_types.UOffsetTFlags.py_type(crc32), 0
     )
 
 
-def AddMd5(builder: flatbuffers.Builder, md5: int):
+def AddCrc32(builder, crc32):
+    FileAddCrc32(builder, crc32)
+
+
+def FileAddMd5(builder, md5):
     builder.PrependUOffsetTRelativeSlot(
         6, flatbuffers.number_types.UOffsetTFlags.py_type(md5), 0
     )
 
 
-def AddSha1(builder: flatbuffers.Builder, sha1: int):
+def AddMd5(builder, md5):
+    FileAddMd5(builder, md5)
+
+
+def FileAddSha1(builder, sha1):
     builder.PrependUOffsetTRelativeSlot(
         7, flatbuffers.number_types.UOffsetTFlags.py_type(sha1), 0
     )
 
 
-def End(builder: flatbuffers.Builder) -> int:
+def AddSha1(builder, sha1):
+    FileAddSha1(builder, sha1)
+
+
+def FileAddSha256(builder, sha256):
+    builder.PrependUOffsetTRelativeSlot(
+        8, flatbuffers.number_types.UOffsetTFlags.py_type(sha256), 0
+    )
+
+
+def AddSha256(builder, sha256):
+    FileAddSha256(builder, sha256)
+
+
+def FileEnd(builder):
     return builder.EndObject()
+
+
+def End(builder):
+    return FileEnd(builder)

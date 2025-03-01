@@ -27,14 +27,15 @@ class SqliteFileListCache(FileListCache):
                     ctime REAL,
                     crc32 VARCHAR(8),
                     md5 VARCHAR(32),
-                    sha1 VARCHAR(40)
+                    sha1 VARCHAR(40),
+                    sha256 VARCHAR(64)
                 );
                 """
             )
             cur.executemany(
                 """
-                INSERT INTO _ (path, size, mtime, atime, ctime, crc32, md5, sha1)
-                VALUES (?, ?, ?, ?, ?, ?);
+                INSERT INTO _ (path, size, mtime, atime, ctime, crc32, md5, sha1, sha256)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
                 """,
                 files,
             )

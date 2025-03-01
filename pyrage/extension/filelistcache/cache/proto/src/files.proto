@@ -9,6 +9,7 @@ message Files {
     string crc32 = 5;
     string md5 = 6;
     string sha1 = 7;
+    string sha256 = 8;
     }
 
   map<string, File> files = 1;

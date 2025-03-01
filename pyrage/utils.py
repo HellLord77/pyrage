@@ -126,12 +126,13 @@ class File(NamedTuple):
     crc32: Optional[str] = None
     md5: Optional[str] = None
     sha1: Optional[str] = None
+    sha256: Optional[str] = None
 
     _PAT_FLOAT = compile(r"\d+\.\d+")
 
     def __eq__(self, other):
         if isinstance(other, File):
-            for field in ("size", "crc32", "md5", "sha1"):
+            for field in ("size", "crc32", "md5", "sha1", "sha256"):
                 # noinspection PyUnboundLocalVariable
                 if (
                     (value := getattr(self, field)) is not None

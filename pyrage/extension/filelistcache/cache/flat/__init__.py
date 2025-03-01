@@ -24,6 +24,8 @@ def _get_file(builder: Builder, file: File) -> int:
         file_["md5"] = builder.CreateString(file.md5)
     if file.sha1 is not None:
         file_["sha1"] = builder.CreateString(file.sha1)
+    if file.sha256 is not None:
+        file_["sha256"] = builder.CreateString(file.sha256)
     StartFile(builder)
     adders = vars(File_)
     for field, value in file_.items():
@@ -61,4 +63,5 @@ class FlatFileListCache(FileListCache):
                 crc32=None if (crc32 := file.Crc32()) is None else crc32.decode(),
                 md5=None if (md5 := file.Md5()) is None else md5.decode(),
                 sha1=None if (sha1 := file.Sha1()) is None else sha1.decode(),
+                sha256=None if (sha256 := file.Sha256()) is None else sha256.decode(),
             )

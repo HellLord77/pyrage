@@ -1,7 +1,9 @@
-from typing import ClassVar as _ClassVar
-from typing import Mapping as _Mapping
-from typing import Optional as _Optional
-from typing import Union as _Union
+from typing import (
+    ClassVar as _ClassVar,
+    Mapping as _Mapping,
+    Optional as _Optional,
+    Union as _Union,
+)
 
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
@@ -13,7 +15,16 @@ class Files(_message.Message):
     __slots__ = ("files",)
 
     class File(_message.Message):
-        __slots__ = ("size", "mtime", "atime", "ctime", "crc32", "md5", "sha1")
+        __slots__ = (
+            "size",
+            "mtime",
+            "atime",
+            "ctime",
+            "crc32",
+            "md5",
+            "sha1",
+            "sha256",
+        )
         SIZE_FIELD_NUMBER: _ClassVar[int]
         MTIME_FIELD_NUMBER: _ClassVar[int]
         ATIME_FIELD_NUMBER: _ClassVar[int]
@@ -21,6 +32,7 @@ class Files(_message.Message):
         CRC32_FIELD_NUMBER: _ClassVar[int]
         MD5_FIELD_NUMBER: _ClassVar[int]
         SHA1_FIELD_NUMBER: _ClassVar[int]
+        SHA256_FIELD_NUMBER: _ClassVar[int]
         size: int
         mtime: float
         atime: float
@@ -28,6 +40,7 @@ class Files(_message.Message):
         crc32: str
         md5: str
         sha1: str
+        sha256: str
         def __init__(
             self,
             size: _Optional[int] = ...,
@@ -37,6 +50,7 @@ class Files(_message.Message):
             crc32: _Optional[str] = ...,
             md5: _Optional[str] = ...,
             sha1: _Optional[str] = ...,
+            sha256: _Optional[str] = ...,
         ) -> None: ...
 
     class FilesEntry(_message.Message):
