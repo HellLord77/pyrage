@@ -25,3 +25,6 @@ STEAM_CACHE_MANIFESTS: Final[bool] = (
 KEMONO_EXTEND_GENERATE: Final[bool] = (
     os.getenv("KEMONO_EXTEND_GENERATE", "false").lower() == "true"
 )
+KEMONO_AUTO_SERVER: Final[bool] = (
+    os.getenv("KEMONO_AUTO_SERVER", "true").lower() == "true"
+)

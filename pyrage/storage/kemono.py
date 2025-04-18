@@ -6,6 +6,7 @@ from requests import Session
 
 from . import Storage
 from ..config import KEMONO_EXTEND_GENERATE
+from ..config import KEMONO_AUTO_SERVER
 from ..utils import File
 from ..utils import Readable
 from ..utils import ReadableResponse
@@ -58,13 +59,30 @@ class KemonoStorage(Storage):
             limit = json["props"]["limit"]
             offset += limit
 
+    def _readable(self, url: str) -> Readable:
+        return ReadableResponse(self._session.get(url, stream=True))
+
     def _get_file(self, file: File) -> Readable:
-        return ReadableResponse(
-            self._session.get(
-                f"{self.SERVER}/{file.path[:2]}/{file.path[2:4]}/{file.path}",
-                stream=True,
+        if KEMONO_AUTO_SERVER:
+            return self._readable(
+                f"{self.SERVER}/{file.path[:2]}/{file.path[2:4]}/{file.path}"
             )
-        )
+        else:
+            response = self._session.get(
+                f"{self.SERVER}/api/v1/search_hash/{file.sha256}"
+            )
+            response.raise_for_status()
+            for post in response.json()["posts"]:
+                response = self._session.get(
+                    f"{self.SERVER}/api/v1/{self._service}/user/{self._creator_id}/post/{post["id"]}"
+                )
+                response.raise_for_status()
+                for attachment in response.json()["attachments"]:
+                    if attachment["stem"] == file.sha256:
+                        return self._readable(
+                            f"{attachment["server"]}/data{attachment["path"]}"
+                        )
+            raise NotImplementedError
 
     def _set_file(self, file: File, readable: Readable):
         raise NotImplementedError
