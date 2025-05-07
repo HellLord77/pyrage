@@ -5,8 +5,8 @@ from typing import Iterable
 from requests import Session
 
 from . import Storage
-from ..config import KEMONO_EXTEND_GENERATE
 from ..config import KEMONO_AUTO_SERVER
+from ..config import KEMONO_EXTEND_GENERATE
 from ..utils import File
 from ..utils import Readable
 from ..utils import ReadableResponse

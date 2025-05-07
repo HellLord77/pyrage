@@ -1,5 +1,5 @@
 tqdm
-urllib3
+
 requests
 
 dropbox
