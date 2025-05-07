@@ -1,7 +1,13 @@
 from __future__ import annotations
 
 from itertools import islice
+from os import SEEK_CUR
+from os import SEEK_END
+from os import SEEK_SET
 from re import compile
+from shutil import COPY_BUFSIZE
+from tempfile import TemporaryFile
+from typing import Any
 from typing import Iterable
 from typing import Iterator
 from typing import NamedTuple
@@ -48,6 +54,10 @@ class CRC32Hash(Hash):
 
 
 class Readable(Protocol):
+    @staticmethod
+    def readable() -> bool:
+        return True
+
     def read(self, size: int = -1) -> bytes:
         pass
 
@@ -60,13 +70,14 @@ class ReadableIterator(Readable):
     def read(self, size: int = -1) -> bytes:
         if size < 0:
             size = None
-        while size is None or len(self._buffer) < size:
-            try:
-                self._buffer += next(self._iterator)
-            except StopIteration:
-                break
-        result, self._buffer = self._buffer[:size], self._buffer[size:]
-        return result
+        length = len(self._buffer)
+        while (size is None or length < size) and (
+            buffer := next(self._iterator, None) is not None
+        ):
+            self._buffer += buffer
+            length += len(buffer)
+        data, self._buffer = self._buffer[:size], self._buffer[size:]
+        return data
 
 
 class ReadableResponse(Readable):
@@ -81,9 +92,76 @@ class ReadableResponse(Readable):
         return self._raw.read(size)
 
 
+class Seekable(Protocol):
+    @staticmethod
+    def seekable() -> bool:
+        return True
+
+    def seek(self, offset: int, whence: int = SEEK_SET) -> int:
+        pass
+
+    def tell(self) -> int:
+        return self.seek(0, SEEK_CUR)
+
+    def truncate(self, size: Optional[int] = None) -> int:
+        raise NotImplementedError
+
+
+class ReadableSeekable(Readable, Seekable, Protocol):
+    pass
+
+
+class SeekableReadable(ReadableSeekable):
+    def __init__(self, readable: Readable):
+        self._position = 0
+        self._buffer = TemporaryFile()
+        self._readable = readable
+
+    def _fill(self, position: Optional[int] = None) -> int:
+        self._buffer.seek(0, SEEK_END)
+        length = self._buffer.tell()
+        while (position is None or length < position) and (
+            buffer := self._readable.read(COPY_BUFSIZE)
+        ):
+            self._buffer.write(buffer)
+            length += len(buffer)
+        return length
+
+    def read(self, size: int = -1) -> bytes:
+        if size < 0:
+            size = None
+        self._fill(None if size is None else self._position + size)
+        self._buffer.seek(self._position)
+        data = self._buffer.read(size)
+        self._position += len(data)
+        return data
+
+    def seek(self, offset: int, whence: int = SEEK_SET) -> int:
+        if whence == SEEK_SET:
+            self._position = offset
+        elif whence == SEEK_CUR:
+            self._position = self._position + offset
+        elif whence == SEEK_END:
+            self._position = self._fill() + offset
+        else:
+            raise NotImplementedError
+        self._fill(self._position)
+        return self._position
+
+    def tell(self) -> int:
+        return self._position
+
+
 class Writable(Protocol):
+    @staticmethod
+    def writable() -> bool:
+        return True
+
     def write(self, data: bytes):
         pass
+
+    def truncate(self, size: Optional[int] = None) -> int:
+        raise NotImplementedError
 
 
 class WritableTee(Writable):
@@ -172,6 +250,15 @@ class File(NamedTuple):
             field.removeprefix("st_"): getattr(stat, field, None)
             for field in Stat.__protocol_attrs__
         }
+
+
+def is_seekable(obj: Any) -> bool:
+    try:
+        seekable = obj.seekable
+    except AttributeError:
+        return False
+    else:
+        return seekable()
 
 
 def iter_join(separator: T, iterable: Iterable[T]) -> Iterable[T]:

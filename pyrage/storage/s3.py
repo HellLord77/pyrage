@@ -8,23 +8,24 @@ from botocore.config import Config
 from . import Storage
 from ..utils import File
 from ..utils import Readable
+from ..utils import SeekableReadable
+from ..utils import is_seekable
 
 
 class S3Storage(Storage):
-    endpoint_url = None
-
     def __init__(
         self,
         bucket: str,
         aws_access_key_id: Optional[str] = None,
         aws_secret_access_key: Optional[str] = None,
+        endpoint_url: Optional[str] = None,
     ):
         config = None
         if aws_secret_access_key is None or aws_access_key_id is None:
             config = Config(signature_version=UNSIGNED)
         self._s3 = client(
             "s3",
-            endpoint_url=self.endpoint_url,
+            endpoint_url=endpoint_url,
             aws_access_key_id=aws_access_key_id,
             aws_secret_access_key=aws_secret_access_key,
             config=config,
@@ -45,31 +46,21 @@ class S3Storage(Storage):
                     content["Key"],
                     size=content["Size"],
                     mtime=content["LastModified"].timestamp(),
-                    md5=etag if len(etag := content["ETag"]) == 32 else None,
+                    md5=(
+                        etag
+                        if len(etag := content["ETag"].replace('"', "")) == 32
+                        else None
+                    ),
                 )
 
     def _get_file(self, file: File) -> Readable:
         return self._s3.get_object(Bucket=self._bucket, Key=file.path)["Body"]
 
     def _set_file(self, file: File, readable: Readable):
+        if not is_seekable(readable):
+            readable = SeekableReadable(readable)
         # noinspection PyTypeChecker
         self._s3.put_object(Bucket=self._bucket, Key=file.path, Body=readable)
 
     def _del_file(self, file: File):
         self._s3.delete_object(Bucket=self._bucket, Key=file.path)
-
-
-class MinIOS3Storage(S3Storage):
-    def __init__(
-        self,
-        endpoint: str,
-        bucket: str,
-        access_key: Optional[str] = None,
-        secret_key: Optional[str] = None,
-    ):
-        self.endpoint_url = endpoint
-        super().__init__(
-            bucket,
-            access_key,
-            secret_key,
-        )
