@@ -2,25 +2,25 @@ tqdm
 
 requests
 
+boto3
 dropbox
-ftputil
 GitPython
+internetarchive
+minio
+paramiko
 py-gitea
 PyGithub
 python-gitlab
-internetarchive
-minio
-boto3
-paramiko
-smbprotocol
 steam[client] @ git+https://github.com/solsticegamestudios/steam.git@v1.6.1
 webdavclient3
 
 flatbuffers
-protobuf
 msgpack
+protobuf
 redis
 
 docker
+ftputil
 pymongo
 qbittorrent-api
+smbprotocol

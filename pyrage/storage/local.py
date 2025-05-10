@@ -53,16 +53,16 @@ class LocalStorage(Storage):
                 )
 
     def _get_file(self, file: File) -> Readable:
-        return open(self._path.joinpath(file.path), "rb")
+        return (self._path / file.path).open("rb")
 
     def _set_file(self, file: File, readable: Readable):
-        path = self._path.joinpath(file.path)
+        path = self._path / file.path
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("wb") as file:
             copyfileobj(readable, file)
 
     def _del_file(self, file: File):
-        self._path.joinpath(file.path).unlink()
+        (self._path / file.path).unlink()
 
 
 class TemporaryLocalStorage(LocalStorage):

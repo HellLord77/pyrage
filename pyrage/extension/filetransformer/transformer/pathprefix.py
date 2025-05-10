@@ -10,4 +10,4 @@ class PathPrefixFileTransformer(FileTransformer):
         return file._replace(path=file.path.removeprefix(self._path_prefix))
 
     def _revert(self, file: File) -> File:
-        return file._replace(path=self._path_prefix + file.path)
+        return file._replace(path=f"{self._path_prefix}{file.path}")

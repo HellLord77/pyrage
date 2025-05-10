@@ -1,4 +1,4 @@
-from functools import cache
+from functools import lru_cache
 from pathlib import Path
 from pathlib import PureWindowsPath
 from typing import Iterable
@@ -31,7 +31,7 @@ class SteamStorage(Storage):
             raise NotImplementedError
         self._app_id = app_id
         if STEAM_CACHE_MANIFESTS:
-            self._cdn.get_manifests = cache(self._cdn.get_manifests)
+            self._cdn.get_manifests = lru_cache(self._cdn.get_manifests)
         super().__init__()
 
     def _generate_file_list(self) -> Iterable[File]:
