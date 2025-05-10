@@ -113,7 +113,7 @@ class MinIOStorage(Storage):
     def _del_file(self, file: File):
         self._minio.remove_object(self._bucket, file.path)
 
-    def __del_files(self, files: Iterable[File]):
+    def _del_files(self, files: Iterable[File]):
         for error in self._minio.remove_objects(
             self._bucket, (DeleteObject(file.path) for file in files)
         ):

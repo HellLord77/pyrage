@@ -1,3 +1,4 @@
+from itertools import batched
 from typing import Iterable
 from typing import Optional
 
@@ -64,3 +65,10 @@ class S3Storage(Storage):
 
     def _del_file(self, file: File):
         self._s3.delete_object(Bucket=self._bucket, Key=file.path)
+
+    def _del_files(self, files: Iterable[File]):
+        for batch in batched(files, 1000):
+            self._s3.delete_objects(
+                Bucket=self._bucket,
+                Delete={"Objects": [{"Key": file.path} for file in batch]},
+            )
