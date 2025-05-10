@@ -8,6 +8,7 @@ from re import compile
 from shutil import COPY_BUFSIZE
 from tempfile import TemporaryFile
 from typing import Any
+from typing import Callable
 from typing import Iterable
 from typing import Iterator
 from typing import NamedTuple
@@ -253,12 +254,12 @@ class File(NamedTuple):
 
 
 def is_seekable(obj: Any) -> bool:
-    try:
-        seekable = obj.seekable
-    except AttributeError:
-        return False
-    else:
-        return seekable()
+    seekable = getattr(obj, "seekable", None)
+    if isinstance(seekable, Callable):
+        seekable = seekable()
+    if not isinstance(seekable, bool):
+        seekable = False
+    return seekable
 
 
 def iter_join(separator: T, iterable: Iterable[T]) -> Iterable[T]:
