@@ -8,6 +8,7 @@ from msgpack import unpack
 
 from . import FileListCache
 from ....utils import File
+from ....utils import consume
 
 
 class MsgPackFileListCache(FileListCache):
@@ -26,7 +27,7 @@ class StreamingMsgPackFileListCache(MsgPackFileListCache):
     def _dump(self, files: Iterator[File]):
         packer = Packer()
         with open(self.path, "wb") as cache:
-            all(cache.write(packer.pack(file)) for file in files)
+            consume(cache.write(packer.pack(file)) for file in files)
 
     def _load(self) -> Iterator[File]:
         with open(self.path, "rb") as cache:

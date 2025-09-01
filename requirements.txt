@@ -2,6 +2,7 @@ tqdm
 
 requests
 
+beautifulsoup4
 boto3
 dropbox
 GitPython

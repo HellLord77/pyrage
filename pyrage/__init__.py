@@ -9,6 +9,7 @@ from .storage.karaokemugen import KaraokeMugenStorage
 from .storage.kemono import KemonoStorage
 from .storage.local import LocalStorage
 from .storage.minio import MinIOStorage
+from .storage.myrient import MyrientStorage
 from .storage.s3 import S3Storage
 from .storage.sftp import SFTPStorage
 from .storage.steam import SteamStorage

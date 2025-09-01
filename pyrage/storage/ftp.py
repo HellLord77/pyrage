@@ -1,5 +1,5 @@
 from ftplib import FTP
-from os.path import relpath
+from pathlib import PurePosixPath
 from shutil import copyfileobj
 from typing import Iterable
 from typing import Optional
@@ -45,23 +45,22 @@ class FTPStorage(Storage):
         while paths:
             prefix = paths.pop(0)
             for dir_ in self._ftp.listdir(prefix):
-                path = prefix + self._ftp.sep + dir_
+                path = f"{prefix}{self._ftp.sep}{dir_}"
                 if self._ftp.path.isdir(path):
                     paths.append(path)
                 else:
-                    # noinspection PyTypeChecker
                     yield File(
-                        relpath(path, cwd), **File.get_stat(self._ftp.stat(path))
+                        PurePosixPath(path).relative_to(cwd).as_posix(),
+                        **File.get_stat(self._ftp.stat(path)),
                     )
 
     def _get_file(self, file: File) -> Readable:
-        return self._ftp.open(self._ftp.getcwd() + self._ftp.sep + file.path, "rb")
+        return self._ftp.open(file.path, "rb")
 
     def _set_file(self, file: File, readable: Readable):
-        path = self._ftp.getcwd() + self._ftp.sep + file.path
-        self._ftp.makedirs(self._ftp.path.dirname(path), exist_ok=True)
-        with self._ftp.open(path, "wb") as file:
+        self._ftp.makedirs(self._ftp.path.dirname(file.path), exist_ok=True)
+        with self._ftp.open(file.path, "wb") as file:
             copyfileobj(readable, file)
 
     def _del_file(self, file: File):
-        self._ftp.remove(self._ftp.getcwd() + self._ftp.sep + file.path)
+        self._ftp.remove(file.path)

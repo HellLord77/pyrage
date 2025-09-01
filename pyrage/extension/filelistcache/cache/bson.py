@@ -7,6 +7,7 @@ from bson import encode
 
 from . import FileListCache
 from ....utils import File
+from ....utils import consume
 
 
 class BSONFileListCache(FileListCache):
@@ -24,7 +25,7 @@ class BSONFileListCache(FileListCache):
 class CompatBSONFileListCache(BSONFileListCache):
     def _dump(self, files: Iterator[File]):
         with open(self.path, "wb") as cache:
-            all(cache.write(encode(file._asdict())) for file in files)
+            consume(cache.write(encode(file._asdict())) for file in files)
 
     def _load(self) -> Iterator[File]:
         with open(self.path, "rb") as cache:

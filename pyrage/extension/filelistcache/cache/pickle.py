@@ -6,6 +6,7 @@ from typing import Iterator
 
 from . import FileListCache
 from ....utils import File
+from ....utils import consume
 
 
 class PickleFileListCache(FileListCache):
@@ -23,7 +24,7 @@ class PickleFileListCache(FileListCache):
 class StreamingPickleFileListCache(PickleFileListCache):
     def _dump(self, files: Iterator[File]):
         with open(self.path, "wb") as cache:
-            any(dump(tuple(file), cache) for file in files)
+            consume(dump(tuple(file), cache) for file in files)
 
     def _load(self) -> Iterator[File]:
         with open(self.path, "rb") as cache:

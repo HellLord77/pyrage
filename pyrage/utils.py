@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import deque
 from itertools import islice
 from os import SEEK_CUR
 from os import SEEK_END
@@ -18,6 +19,7 @@ from typing import TypeVar
 from zlib import crc32
 
 from requests import Response
+from requests import Session
 
 T = TypeVar("T")
 
@@ -182,6 +184,11 @@ class WritableHash(Protocol):
         self.write = hash.update
 
 
+class DefragmentedSession(Session):
+    def request(self, method: str, url: str, *args, **kwargs) -> Response:
+        return super().request(method, url.replace("#", "%23"), *args, **kwargs)
+
+
 class Stat(Protocol):
     def st_size(self) -> int:
         pass
@@ -271,3 +278,10 @@ def iter_join(separator: T, iterable: Iterable[T]) -> Iterable[T]:
     for item in iterator:
         yield separator
         yield item
+
+
+def consume(iterator, n: Optional[int] = None):
+    if n is None:
+        deque(iterator, maxlen=0)
+    else:
+        next(islice(iterator, n, n), None)

@@ -26,7 +26,7 @@ class SMBStorage(Storage):
         password: Optional[str] = None,
     ):
         register_session(server, username, password, port)
-        self._path = PureWindowsPath(sep + sep + server + sep, share)
+        self._path = PureWindowsPath(f"{sep}{sep}{server}{sep}", share)
         super().__init__()
 
     def _generate_file_list(self) -> Iterable[File]:
@@ -41,13 +41,13 @@ class SMBStorage(Storage):
                     )
 
     def _get_file(self, file: File) -> Readable:
-        return open_file(self._path.joinpath(file.path), "rb")
+        return open_file(self._path / file.path, "rb")
 
     def _set_file(self, file: File, readable: Readable):
-        path = self._path.joinpath(file.path)
+        path = self._path / file.path
         makedirs(path.parent, exist_ok=True)
         with open_file(path, "wb") as file:
             copyfileobj(readable, file)
 
     def _del_file(self, file: File):
-        remove(self._path.joinpath(file.path))
+        remove(self._path / file.path)

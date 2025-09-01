@@ -13,6 +13,7 @@ from .gen.Files import Start as StartFiles
 from .gen.Files import StartFilesVector
 from .. import FileListCache
 from .....utils import File
+from .....utils import consume
 
 
 def _get_file(builder: Builder, file: File) -> int:
@@ -41,7 +42,7 @@ class FlatFileListCache(FileListCache):
         builder = Builder()
         files_ = tuple(_get_file(builder, file) for file in files)
         StartFilesVector(builder, len(files_))
-        any(map(builder.PrependUOffsetTRelative, files_))
+        consume(map(builder.PrependUOffsetTRelative, files_))
         files__ = builder.EndVector()
         StartFiles(builder)
         AddFiles(builder, files__)

@@ -8,14 +8,16 @@ from concurrent.futures import as_completed
 from functools import cache
 from functools import partial
 from io import BytesIO
+from itertools import chain
+from itertools import islice
 from types import MappingProxyType
 from typing import Any
 from typing import Callable
 from typing import Iterable
 from typing import Iterator
-from typing import Mapping
 from typing import MutableMapping
 from typing import Optional
+from warnings import deprecated
 
 from tqdm.contrib.concurrent import thread_map
 
@@ -23,6 +25,7 @@ from ..config import STORAGE_DRY_RUN
 from ..config import STORAGE_MAX_THREADS
 from ..utils import File
 from ..utils import Readable
+from ..utils import consume
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +57,7 @@ class Storage(metaclass=ABCMeta):
         raise NotImplementedError
 
     def _fetch_file_list(self):
-        any(map(self.add_file_list, self._generate_file_list()))
+        consume(map(self.add_file_list, self._generate_file_list()))
         logger.info("[#] %s", self)
 
     def fetch_file_list(self) -> MappingProxyType[str, File]:
@@ -62,11 +65,55 @@ class Storage(metaclass=ABCMeta):
             self._fetch_file_list()
         return self._file_list_proxy
 
-    def diff_file_list(
-        self, files: Storage | Mapping[str, File], strict: bool = True
+    def rev_diff_file_list(
+        self, files: Iterable[File], strict: bool = True
+    ) -> Iterator[File]:
+        file_list = self.fetch_file_list()
+        for file in files:
+            try:
+                self_file = file_list[file.path]
+            except KeyError:
+                yield file
+            else:
+                if strict and file != self_file:
+                    yield file
+
+    @deprecated("")
+    def union(self, files: Iterable[File], strict: bool = True) -> Iterator[File]:
+        yield from self
+        self_files = self.fetch_file_list()
+        for file in files:
+            try:
+                self_file = self_files[file.path]
+            except KeyError:
+                yield file
+            else:
+                if strict and file != self_file:
+                    yield file
+
+    @deprecated("")
+    def intersection(
+        self, files: Iterable[File], strict: bool = True
     ) -> Iterator[File]:
         if isinstance(files, Storage):
             files = files.fetch_file_list()
+        else:
+            files = {file.path: file for file in files}
+        for file in self:
+            try:
+                other_file = files[file.path]
+            except KeyError:
+                continue
+            else:
+                if not strict or file == other_file:
+                    yield file
+
+    @deprecated("")
+    def difference(self, files: Iterable[File], strict: bool = True) -> Iterator[File]:
+        if isinstance(files, Storage):
+            files = files.fetch_file_list()
+        else:
+            files = {file.path: file for file in files}
         for file in self:
             try:
                 other_file = files[file.path]
@@ -146,17 +193,23 @@ class Storage(metaclass=ABCMeta):
         self.fetch_file_list()
         self.del_files(self)
 
-    def sync(self, other: Storage):
+    def sync(self, *others: Storage):
         with ThreadPoolExecutor() as executor:
-            for future in as_completed(
-                (
-                    executor.submit(self.fetch_file_list),
-                    executor.submit(other.fetch_file_list),
-                )
-            ):
+            futures = chain(
+                (executor.submit(self.fetch_file_list),),
+                (executor.submit(other.fetch_file_list) for other in others),
+            )
+            for future in as_completed(futures):
                 future.result()
-        self.copy_files(other, tuple(other.diff_file_list(self)))
-        self.del_files(tuple(self.diff_file_list(other, False)))
+        for index, other in enumerate(others):
+            copy_files = other
+            for rest in islice(others, index + 1, None):
+                copy_files = rest.rev_diff_file_list(copy_files)
+            self.copy_files(other, tuple(self.rev_diff_file_list(copy_files)))
+        del_files = self
+        for other in others:
+            del_files = other.rev_diff_file_list(del_files)
+        self.del_files(tuple(del_files))
 
 
 @cache

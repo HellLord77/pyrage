@@ -18,6 +18,13 @@ MINIO_RETRY_GENERATE: Final[bool] = (
     os.getenv("MINIO_RETRY_GENERATE", "false").lower() == "true"
 )
 
+MYRIENT_EXTEND_GENERATE: Final[bool] = (
+    os.getenv("MYRIENT_EXTEND_GENERATE", "false").lower() == "true"
+)
+MYRIENT_RETRY_EXTEND_GENERATE: Final[bool] = (
+    os.getenv("MYRIENT_RETRY_EXTEND_GENERATE", "false").lower() == "true"
+)
+
 STEAM_CACHE_MANIFESTS: Final[bool] = (
     os.getenv("STEAM_CACHE_MANIFESTS", "true").lower() == "true"
 )
