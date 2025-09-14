@@ -29,7 +29,7 @@ class RommStorage(Storage):
                     break
             else:
                 raise NotImplementedError
-        self._platform_id = platform_id
+        self._platform_id = str(platform_id)
         super().__init__()
 
     def _generate_file_list(self) -> Iterable[File]:
@@ -66,7 +66,7 @@ class RommStorage(Storage):
     def _set_file(self, file: File, readable: Readable):
         self._session.post(
             f"{self._host}/api/roms",
-            readable,
+            files={file.path: readable},
             headers={
                 "X-Upload-Platform": self._platform_id,
                 "X-Upload-Filename": file.path,

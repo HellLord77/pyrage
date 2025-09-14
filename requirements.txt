@@ -13,6 +13,7 @@ py-gitea
 PyGithub
 python-gitlab
 steam[client] @ git+https://github.com/solsticegamestudios/steam.git@v1.6.1
+wayback
 webdavclient3
 
 flatbuffers

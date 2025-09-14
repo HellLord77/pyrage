@@ -13,6 +13,7 @@ from typing import Callable
 from typing import Iterable
 from typing import Iterator
 from typing import NamedTuple
+from posixpath import sep
 from typing import Optional
 from typing import Protocol
 from typing import TypeVar
@@ -285,3 +286,10 @@ def consume(iterator, n: Optional[int] = None):
         deque(iterator, maxlen=0)
     else:
         next(islice(iterator, n, n), None)
+
+def lsplit(path: str) -> tuple[str, str]:
+    index = path.find(sep)
+    if index < 0:
+        return "", path
+    else:
+        return path[:index], path[index + 1 :]

@@ -19,7 +19,9 @@ from typing import MutableMapping
 from typing import Optional
 from warnings import deprecated
 
+from tqdm import tqdm
 from tqdm.contrib.concurrent import thread_map
+from tqdm.utils import CallbackIOWrapper
 
 from ..config import STORAGE_DRY_RUN
 from ..config import STORAGE_MAX_THREADS
@@ -32,6 +34,8 @@ logger = logging.getLogger(__name__)
 
 class Storage(metaclass=ABCMeta):
     _file_list: MutableMapping[str, File]
+
+    _fetch_file_list_init: bool = False
 
     def __init__(self, *_, **__):
         self._file_list = {}
@@ -61,12 +65,13 @@ class Storage(metaclass=ABCMeta):
         logger.info("[#] %s", self)
 
     def fetch_file_list(self) -> MappingProxyType[str, File]:
-        if not self._file_list:
+        if not self._fetch_file_list_init:
+            self._fetch_file_list_init = True
             self._fetch_file_list()
         return self._file_list_proxy
 
     def rev_diff_file_list(
-        self, files: Iterable[File], strict: bool = True
+        self, files: Iterable[File], *, strict: bool = True
     ) -> Iterator[File]:
         file_list = self.fetch_file_list()
         for file in files:
@@ -79,7 +84,7 @@ class Storage(metaclass=ABCMeta):
                     yield file
 
     @deprecated("")
-    def union(self, files: Iterable[File], strict: bool = True) -> Iterator[File]:
+    def union(self, files: Iterable[File], *, strict: bool = True) -> Iterator[File]:
         yield from self
         self_files = self.fetch_file_list()
         for file in files:
@@ -93,7 +98,7 @@ class Storage(metaclass=ABCMeta):
 
     @deprecated("")
     def intersection(
-        self, files: Iterable[File], strict: bool = True
+        self, files: Iterable[File], *, strict: bool = True
     ) -> Iterator[File]:
         if isinstance(files, Storage):
             files = files.fetch_file_list()
@@ -109,7 +114,9 @@ class Storage(metaclass=ABCMeta):
                     yield file
 
     @deprecated("")
-    def difference(self, files: Iterable[File], strict: bool = True) -> Iterator[File]:
+    def difference(
+        self, files: Iterable[File], *, strict: bool = True
+    ) -> Iterator[File]:
         if isinstance(files, Storage):
             files = files.fetch_file_list()
         else:
@@ -160,10 +167,19 @@ class Storage(metaclass=ABCMeta):
 
     def _copy_file(self, src: File | Storage, dst: File):
         if isinstance(src, Storage):
+            total = dst.size
             src = src._get_file(dst)
-        elif isinstance(src, File):
+        else:
+            total = src.size
             src = self._get_file(src)
-        self._set_file(dst, src)
+        with tqdm(
+            total=total,
+            unit="B",
+            unit_scale=True,
+            dynamic_ncols=True,
+            unit_divisor=1024,
+        ) as t:
+            self._set_file(dst, CallbackIOWrapper(t.update, src))
 
     def copy_file(self, src: File | Storage, dst: File):
         _run(partial(self._copy_file, src, dst))
@@ -208,7 +224,7 @@ class Storage(metaclass=ABCMeta):
             self.copy_files(other, tuple(self.rev_diff_file_list(copy_files)))
         del_files = self
         for other in others:
-            del_files = other.rev_diff_file_list(del_files)
+            del_files = other.rev_diff_file_list(del_files, strict=False)
         self.del_files(tuple(del_files))
 
 
@@ -229,4 +245,10 @@ def _run(func: partial) -> Any:
 
 
 def _execute(func: Callable[[File], Any], files: Iterable[File]):
-    thread_map(func, files, max_workers=STORAGE_MAX_THREADS)
+    thread_map(
+        func,
+        files,
+        max_workers=STORAGE_MAX_THREADS,
+        unit="file",
+        dynamic_ncols=True,
+    )
