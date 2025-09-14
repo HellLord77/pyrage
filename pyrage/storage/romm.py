@@ -5,6 +5,7 @@ from typing import Optional
 from requests import Session
 
 from . import Storage
+from ..config import ROMM_FLAT_PATH
 from ..utils import File
 from ..utils import Readable
 from ..utils import ReadableResponse
@@ -43,8 +44,11 @@ class RommStorage(Storage):
             roms = response.json()
             for rom in roms["items"]:
                 for file in rom["files"]:
+                    path = file["file_name"]
+                    if not ROMM_FLAT_PATH:
+                        path = f'{rom["rom_id"]}/{path}'
                     yield File(
-                        f'{file["rom_id"]}/{file["file_name"]}',
+                        path,
                         mtime=datetime.fromisoformat(file["last_modified"]).timestamp(),
                         size=file["file_size_bytes"],
                         crc32=file["crc_hash"],
@@ -56,12 +60,15 @@ class RommStorage(Storage):
                 break
 
     def _get_file(self, file: File) -> Readable:
-        rom_id, file_name = file.path.split("/", 1)
-        return ReadableResponse(
-            self._session.get(
-                f"{self._host}/api/roms/{rom_id}/content/{file_name}", stream=True
+        if ROMM_FLAT_PATH:
+            raise NotImplementedError
+        else:
+            rom_id, file_name = file.path.split("/", 1)
+            return ReadableResponse(
+                self._session.get(
+                    f"{self._host}/api/roms/{rom_id}/content/{file_name}", stream=True
+                )
             )
-        )
 
     def _set_file(self, file: File, readable: Readable):
         self._session.post(
