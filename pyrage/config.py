@@ -8,15 +8,19 @@ FTP_INCLUDE_HIDDEN: Final[bool] = (
     os.getenv("FTP_INCLUDE_HIDDEN", "false").lower() == "true"
 )
 
+LOCAL_EXTEND_GENERATE: Final[bool] = (
+    os.getenv("LOCAL_EXTEND_GENERATE", "false").lower() == "true"
+)
+
 KEMONO_EXTEND_GENERATE: Final[bool] = (
-        os.getenv("KEMONO_EXTEND_GENERATE", "false").lower() == "true"
+    os.getenv("KEMONO_EXTEND_GENERATE", "false").lower() == "true"
 )
 KEMONO_AUTO_SERVER: Final[bool] = (
-        os.getenv("KEMONO_AUTO_SERVER", "true").lower() == "true"
+    os.getenv("KEMONO_AUTO_SERVER", "true").lower() == "true"
 )
 
 MINIO_RETRY_GENERATE: Final[bool] = (
-        os.getenv("MINIO_RETRY_GENERATE", "false").lower() == "true"
+    os.getenv("MINIO_RETRY_GENERATE", "false").lower() == "true"
 )
 
 MYRIENT_EXTEND_GENERATE: Final[bool] = (
@@ -34,6 +38,10 @@ STEAM_CACHE_MANIFESTS: Final[bool] = (
     os.getenv("STEAM_CACHE_MANIFESTS", "true").lower() == "true"
 )
 
+TCGDEX_EXTEND_GENERATE: Final[bool] = (
+    os.getenv("TCGDEX_EXTEND_GENERATE", "false").lower() == "true"
+)
+
 WAYBACK_FLAT_PATH: Final[bool] = (
     os.getenv("WAYBACK_FLAT_PATH", "false").lower() == "true"
 )
@@ -42,5 +50,5 @@ WAYBACK_EXTEND_GENERATE: Final[bool] = (
 )
 
 WEBDAV_DISABLE_CHECK: Final[bool] = (
-        os.getenv("WEBDAV_DISABLE_CHECK", "false").lower() == "true"
+    os.getenv("WEBDAV_DISABLE_CHECK", "false").lower() == "true"
 )

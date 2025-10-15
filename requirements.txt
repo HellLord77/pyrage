@@ -1,6 +1,9 @@
 tqdm
 
+iterable-io
+
 requests
+requests-toolbelt
 
 beautifulsoup4
 boto3
@@ -13,6 +16,7 @@ py-gitea
 PyGithub
 python-gitlab
 steam[client] @ git+https://github.com/solsticegamestudios/steam.git@v1.6.1
+tcgdex-sdk
 wayback
 webdavclient3
 

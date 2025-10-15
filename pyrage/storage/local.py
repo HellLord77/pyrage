@@ -1,17 +1,12 @@
-from hashlib import md5
-from hashlib import sha1
-from hashlib import sha256
+from hashlib import md5, sha1, sha256
 from pathlib import Path
 from shutil import copyfileobj
 from tempfile import mkdtemp
 from typing import Iterable
 
+from ..config import LOCAL_EXTEND_GENERATE
+from ..utils import CRC32Hash, File, Readable, WritableHash, WritableTee
 from . import Storage
-from ..utils import CRC32Hash
-from ..utils import File
-from ..utils import Readable
-from ..utils import WritableHash
-from ..utils import WritableTee
 
 
 def _get_hash(path: Path) -> dict[str, str]:
@@ -41,15 +36,7 @@ class LocalStorage(Storage):
                 yield File(
                     path.relative_to(self._path).as_posix(),
                     **File.get_stat(path.stat()),
-                    **_get_hash(path)
-                )
-
-    def __generate_file_list(self) -> Iterable[File]:
-        for path in self._path.rglob("*"):
-            if path.is_file():
-                yield File(
-                    path.relative_to(self._path).as_posix(),
-                    **File.get_stat(path.stat())
+                    **_get_hash(path) if LOCAL_EXTEND_GENERATE else {},
                 )
 
     def _get_file(self, file: File) -> Readable:
