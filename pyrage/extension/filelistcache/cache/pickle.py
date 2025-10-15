@@ -1,12 +1,9 @@
-from itertools import repeat
-from itertools import starmap
-from pickle import dump
-from pickle import load
+from itertools import repeat, starmap
+from pickle import dump, load
 from typing import Iterator
 
+from ....utils import File, consume
 from . import FileListCache
-from ....utils import File
-from ....utils import consume
 
 
 class PickleFileListCache(FileListCache):

@@ -1,10 +1,9 @@
-from typing import Iterator
-from typing import Optional
+from typing import Iterator, Optional
 
 from redis import Redis
 
-from . import FileListMapping
 from ....utils import File
+from . import FileListMapping
 
 
 class RedisFileListMapping(FileListMapping):

@@ -1,20 +1,13 @@
-from posixpath import dirname
-from posixpath import join
-from posixpath import relpath
-from posixpath import sep
+from posixpath import dirname, join, relpath, sep
 from stat import S_ISDIR
-from typing import Iterable
-from typing import Optional
+from typing import Iterable, Optional
 
-from paramiko import AutoAddPolicy
-from paramiko import SFTPClient
-from paramiko import SSHClient
+from paramiko import AutoAddPolicy, SFTPClient, SSHClient
 from paramiko.config import SSH_PORT
 
-from . import Storage
 from ..config import SFTP_AUTO_ADD
-from ..utils import File
-from ..utils import Readable
+from ..utils import File, Readable
+from . import Storage
 
 
 def _makedirs(sftp: SFTPClient, path: str):

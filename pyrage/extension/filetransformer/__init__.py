@@ -1,9 +1,9 @@
 from functools import lru_cache
 
+from ..utils import TStorage
 from .transformer import FileTransformer
 from .transformer.pathprefix import PathPrefixFileTransformer
 from .utils import StorageTransformer
-from ..utils import TStorage
 
 
 @lru_cache

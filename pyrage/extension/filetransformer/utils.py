@@ -1,11 +1,9 @@
 from abc import ABCMeta
-from typing import Iterable
-from typing import Mapping
+from typing import Iterable, Mapping
 
-from .transformer import FileTransformer
 from ...storage import Storage
-from ...utils import File
-from ...utils import Readable
+from ...utils import File, Readable
+from .transformer import FileTransformer
 
 
 class StorageTransformer(Storage, metaclass=ABCMeta):
@@ -17,7 +15,7 @@ class StorageTransformer(Storage, metaclass=ABCMeta):
         *args,
         transformer_args: Iterable = (),
         transformer_kwargs: Mapping = {},
-        **kwargs
+        **kwargs,
     ):
         self._file_transformer = self._t_file_transformer(
             *transformer_args, **transformer_kwargs

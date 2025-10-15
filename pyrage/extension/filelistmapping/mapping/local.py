@@ -1,17 +1,12 @@
-from base64 import urlsafe_b64decode
-from base64 import urlsafe_b64encode
-from os import makedirs
-from os import remove
-from os import walk
-from os.path import exists
-from os.path import join
+from base64 import urlsafe_b64decode, urlsafe_b64encode
+from os import makedirs, remove, walk
+from os.path import exists, join
 from shutil import rmtree
 from tempfile import mkdtemp
-from typing import Iterator
-from typing import Optional
+from typing import Iterator, Optional
 
-from . import FileListMapping
 from ....utils import File
+from . import FileListMapping
 
 
 def _get_key(path: str) -> str:

@@ -1,19 +1,12 @@
-from ntpath import relpath
-from ntpath import sep
+from ntpath import relpath, sep
 from pathlib import PureWindowsPath
 from shutil import copyfileobj
-from typing import Iterable
-from typing import Optional
+from typing import Iterable, Optional
 
-from smbclient import makedirs
-from smbclient import open_file
-from smbclient import register_session
-from smbclient import remove
-from smbclient import scandir
+from smbclient import makedirs, open_file, register_session, remove, scandir
 
+from ..utils import File, Readable
 from . import Storage
-from ..utils import File
-from ..utils import Readable
 
 
 class SMBStorage(Storage):

@@ -1,16 +1,13 @@
 from functools import lru_cache
-from pathlib import Path
-from pathlib import PureWindowsPath
-from typing import Iterable
-from typing import Optional
+from pathlib import Path, PureWindowsPath
+from typing import Iterable, Optional
 
 from steam.client import SteamClient
 from steam.client.cdn import CDNClient
 
-from . import Storage
 from ..config import STEAM_CACHE_MANIFESTS
-from ..utils import File
-from ..utils import Readable
+from ..utils import File, Readable
+from . import Storage
 
 
 class SteamStorage(Storage):

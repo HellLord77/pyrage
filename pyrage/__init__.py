@@ -14,9 +14,7 @@ from .storage.s3 import S3Storage
 from .storage.sftp import SFTPStorage
 from .storage.steam import SteamStorage
 from .storage.tar import TarStorage
+from .storage.tcgdex import TCGDexStorage
 from .storage.webdav import WebDAVStorage
 from .storage.zip import ZipStorage
-
-from .utils import File
-from .utils import Readable
-from .utils import Writable
+from .utils import File, Readable, Writable

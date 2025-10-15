@@ -1,11 +1,10 @@
-from typing import Iterable
-from typing import Iterator
+from typing import Iterable, Iterator
 
 from google.protobuf.json_format import MessageToDict
 
-from .gen.files_pb2 import Files
-from .. import FileListCache
 from .....utils import File
+from .. import FileListCache
+from .gen.files_pb2 import Files
 
 
 class ProtoFileListCache(FileListCache):

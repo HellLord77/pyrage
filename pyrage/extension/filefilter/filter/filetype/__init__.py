@@ -1,9 +1,8 @@
 from mimetypes import MimeTypes
-from os.path import dirname
-from os.path import join
+from os.path import dirname, join
 
-from .. import FileFilter
 from .....utils import File
+from .. import FileFilter
 
 
 class FileTypeFileFilter(FileFilter):

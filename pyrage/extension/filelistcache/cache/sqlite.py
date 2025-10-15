@@ -2,8 +2,8 @@ from itertools import starmap
 from sqlite3 import connect
 from typing import Iterator
 
-from . import FileListCache
 from ....utils import File
+from . import FileListCache
 
 
 class SqliteFileListCache(FileListCache):

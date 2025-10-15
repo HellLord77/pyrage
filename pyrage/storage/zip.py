@@ -1,15 +1,11 @@
 from datetime import datetime
 from shutil import copyfileobj
 from threading import Lock
-from typing import BinaryIO
-from typing import Iterable
-from typing import Optional
+from typing import BinaryIO, Iterable, Optional
 from zipfile import ZipFile
 
+from ..utils import CRC32Hash, File, Readable
 from . import Storage
-from ..utils import CRC32Hash
-from ..utils import File
-from ..utils import Readable
 
 
 class ZipStorage(Storage):

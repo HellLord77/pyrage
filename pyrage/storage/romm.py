@@ -1,17 +1,15 @@
 from datetime import datetime
-from typing import Iterable
-from typing import Optional
+from typing import Iterable, Optional
 
 from requests import Session
+from requests_toolbelt import MultipartEncoder
 
-from . import Storage
 from ..config import ROMM_FLAT_PATH
-from ..utils import File
-from ..utils import Readable
-from ..utils import ReadableResponse
+from ..utils import File, Readable, ReadableResponse
+from . import Storage
 
 
-class RommStorage(Storage):
+class RomMStorage(Storage):
     def __init__(
         self,
         platform_id: int | str,
@@ -46,7 +44,7 @@ class RommStorage(Storage):
                 for file in rom["files"]:
                     path = file["file_name"]
                     if not ROMM_FLAT_PATH:
-                        path = f'{rom["rom_id"]}/{path}'
+                        path = f"{rom['rom_id']}/{path}"
                     yield File(
                         path,
                         mtime=datetime.fromisoformat(file["last_modified"]).timestamp(),
@@ -71,10 +69,12 @@ class RommStorage(Storage):
             )
 
     def _set_file(self, file: File, readable: Readable):
+        data = MultipartEncoder({file.path: readable})
         self._session.post(
             f"{self._host}/api/roms",
-            files={file.path: readable},
+            data,
             headers={
+                "Content-Type": data.content_type,
                 "X-Upload-Platform": self._platform_id,
                 "X-Upload-Filename": file.path,
             },

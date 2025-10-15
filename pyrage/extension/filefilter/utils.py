@@ -1,11 +1,9 @@
 from abc import ABCMeta
-from typing import Iterable
-from typing import Mapping
-from typing import Optional
+from typing import Iterable, Mapping, Optional
 
-from .filter import FileFilter
 from ...storage import Storage
 from ...utils import File
+from .filter import FileFilter
 
 
 class StorageFilter(Storage, metaclass=ABCMeta):
@@ -18,7 +16,7 @@ class StorageFilter(Storage, metaclass=ABCMeta):
         filter_invert: Optional[bool] = None,
         filter_args: Iterable = (),
         filter_kwargs: Mapping = {},
-        **kwargs
+        **kwargs,
     ):
         if filter_invert is None:
             filter_invert = False

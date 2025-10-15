@@ -4,13 +4,9 @@ from typing import Iterable
 from bs4 import BeautifulSoup
 from requests import RequestException
 
+from ..config import MYRIENT_EXTEND_GENERATE, MYRIENT_RETRY_EXTEND_GENERATE
+from ..utils import DefragmentedSession, File, Readable, ReadableResponse
 from . import Storage
-from ..config import MYRIENT_EXTEND_GENERATE
-from ..config import MYRIENT_RETRY_EXTEND_GENERATE
-from ..utils import DefragmentedSession
-from ..utils import File
-from ..utils import Readable
-from ..utils import ReadableResponse
 
 
 class MyrientStorage(Storage):
@@ -51,11 +47,10 @@ class MyrientStorage(Storage):
             response = self._session.get(f"{self._BASE_URL}{self._cwd}{prefix}")
             response.raise_for_status()
             soup = BeautifulSoup(response.text)
-            for row in soup.select("table#list tbody tr:not(:first-child)"):
+            for row in soup.select("table#list tbody tr:nth-of-type(n+4)"):
                 link = row.select_one("td.link a").get_text()
-                size = row.select_one("td.size").get_text()
                 path = f"{prefix}{link}"
-                if size == "-":
+                if link.endswith("/"):
                     paths.append(path)
                 else:
                     yield self._file(path)

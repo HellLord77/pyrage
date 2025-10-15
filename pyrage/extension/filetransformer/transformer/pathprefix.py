@@ -1,5 +1,5 @@
-from . import FileTransformer
 from ....utils import File
+from . import FileTransformer
 
 
 class PathPrefixFileTransformer(FileTransformer):

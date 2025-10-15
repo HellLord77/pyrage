@@ -1,10 +1,10 @@
 from functools import lru_cache
 
+from ..utils import TStorage
 from .mapping import FileListMapping
 from .mapping.local import LocalFileListMapping
 from .mapping.sqlite import SqliteFileListMapping
 from .utils import StorageMapping
-from ..utils import TStorage
 
 
 @lru_cache

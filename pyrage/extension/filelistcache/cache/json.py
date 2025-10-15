@@ -1,10 +1,9 @@
 from itertools import starmap
-from json import dump
-from json import load
+from json import dump, load
 from typing import Iterator
 
-from . import FileListCache
 from ....utils import File
+from . import FileListCache
 
 
 class JSONFileListCache(FileListCache):

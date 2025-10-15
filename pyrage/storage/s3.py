@@ -1,16 +1,12 @@
 from itertools import batched
-from typing import Iterable
-from typing import Optional
+from typing import Iterable, Optional
 
 from boto3 import client
 from botocore import UNSIGNED
 from botocore.config import Config
 
+from ..utils import File, Readable, SeekableReadable, is_seekable
 from . import Storage
-from ..utils import File
-from ..utils import Readable
-from ..utils import SeekableReadable
-from ..utils import is_seekable
 
 
 class S3Storage(Storage):

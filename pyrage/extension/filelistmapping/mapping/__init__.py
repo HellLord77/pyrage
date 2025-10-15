@@ -1,6 +1,5 @@
 from abc import ABCMeta
-from typing import MutableMapping
-from typing import Optional
+from typing import MutableMapping, Optional
 
 from ....utils import File
 

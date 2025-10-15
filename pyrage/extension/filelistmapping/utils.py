@@ -2,8 +2,8 @@ from abc import ABCMeta
 from types import MappingProxyType
 from typing import Optional
 
-from .mapping import FileListMapping
 from ...storage import Storage
+from .mapping import FileListMapping
 
 
 class StorageMapping(Storage, metaclass=ABCMeta):

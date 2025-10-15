@@ -1,16 +1,10 @@
-from typing import Iterable
-from typing import Optional
+from typing import Iterable, Optional
 
-from wayback import CdxRecord
-from wayback import WaybackClient
+from wayback import CdxRecord, WaybackClient
 
+from ..config import WAYBACK_EXTEND_GENERATE, WAYBACK_FLAT_PATH
+from ..utils import File, Readable, ReadableResponse, lsplit
 from . import Storage
-from ..config import WAYBACK_EXTEND_GENERATE
-from ..config import WAYBACK_FLAT_PATH
-from ..utils import File
-from ..utils import Readable
-from ..utils import ReadableResponse
-from ..utils import lsplit
 
 
 class WaybackMachineStorage(Storage):

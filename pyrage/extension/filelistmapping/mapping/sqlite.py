@@ -1,9 +1,8 @@
 from sqlite3 import connect
-from typing import Iterator
-from typing import Optional
+from typing import Iterator, Optional
 
-from . import FileListMapping
 from ....utils import File
+from . import FileListMapping
 
 
 class SqliteFileListMapping(FileListMapping):

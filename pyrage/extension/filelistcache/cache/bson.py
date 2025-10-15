@@ -1,13 +1,9 @@
-from typing import Iterable
-from typing import Iterator
+from typing import Iterable, Iterator
 
-from bson import decode
-from bson import decode_file_iter
-from bson import encode
+from bson import decode, decode_file_iter, encode
 
+from ....utils import File, consume
 from . import FileListCache
-from ....utils import File
-from ....utils import consume
 
 
 class BSONFileListCache(FileListCache):

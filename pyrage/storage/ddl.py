@@ -1,13 +1,10 @@
-from typing import Iterable
-from typing import Optional
+from typing import Iterable, Optional
 from urllib.parse import urlparse
 
 from requests import Session
 
+from ..utils import File, Readable, ReadableResponse
 from . import Storage
-from ..utils import File
-from ..utils import Readable
-from ..utils import ReadableResponse
 
 
 class DDLStorage(Storage):
@@ -33,11 +30,12 @@ class DDLStorage(Storage):
 
     def _generate_file_list(self) -> Iterable[File]:
         if self._name is None or self._size is None:
-            headers = self._session.head(self._url).headers
+            response = self._session.head(self._url,allow_redirects=True)
+            response.raise_for_status()
             if self._name is None:  # TODO headers.get("Content-Disposition")
                 self._name = urlparse(self._url).path.split("/")[-1]
             if self._size is None:
-                size = headers.get("Content-Length")
+                size = response.headers.get("Content-Length")
                 if size is not None:
                     self._size = int(size)
         yield File(

@@ -1,26 +1,17 @@
 from __future__ import annotations
 
 from collections import deque
+from io import DEFAULT_BUFFER_SIZE
 from itertools import islice
-from os import SEEK_CUR
-from os import SEEK_END
-from os import SEEK_SET
-from re import compile
-from shutil import COPY_BUFSIZE
-from tempfile import TemporaryFile
-from typing import Any
-from typing import Callable
-from typing import Iterable
-from typing import Iterator
-from typing import NamedTuple
+from os import SEEK_CUR, SEEK_END, SEEK_SET
 from posixpath import sep
-from typing import Optional
-from typing import Protocol
-from typing import TypeVar
+from re import compile
+from tempfile import TemporaryFile
+from typing import Any, Callable, Iterable, NamedTuple, Optional, Protocol, TypeVar
 from zlib import crc32
 
-from requests import Response
-from requests import Session
+from iterableio import open_iterable
+from requests import Response, Session
 
 T = TypeVar("T")
 
@@ -66,34 +57,17 @@ class Readable(Protocol):
         pass
 
 
-class ReadableIterator(Readable):
-    def __init__(self, iterator: Iterator[bytes]):
-        self._buffer = b""
-        self._iterator = iterator
-
-    def read(self, size: int = -1) -> bytes:
-        if size < 0:
-            size = None
-        length = len(self._buffer)
-        while (size is None or length < size) and (
-            buffer := next(self._iterator, None) is not None
-        ):
-            self._buffer += buffer
-            length += len(buffer)
-        data, self._buffer = self._buffer[:size], self._buffer[size:]
-        return data
+# noinspection PyPep8Naming
+def ReadableIterator(iterable: Iterable[bytes]) -> Readable:
+    return open_iterable(iterable, "rb")
 
 
-class ReadableResponse(Readable):
-    def __init__(self, response: Response):
-        response.raise_for_status()
-        self._raw = response.raw
-        self._raw.decode_content = True
-
-    def read(self, size: int = -1) -> bytes:
-        if size < 0:
-            size = None
-        return self._raw.read(size)
+# noinspection PyPep8Naming
+def ReadableResponse(response: Response) -> Readable:
+    response.raise_for_status()
+    response.raw.decode_content = True
+    response.raw.len = int(response.headers["Content-Length"])
+    return response.raw
 
 
 class Seekable(Protocol):
@@ -125,7 +99,7 @@ class SeekableReadable(ReadableSeekable):
         self._buffer.seek(0, SEEK_END)
         length = self._buffer.tell()
         while (position is None or length < position) and (
-            buffer := self._readable.read(COPY_BUFSIZE)
+            buffer := self._readable.read(DEFAULT_BUFFER_SIZE)
         ):
             self._buffer.write(buffer)
             length += len(buffer)
@@ -286,6 +260,7 @@ def consume(iterator, n: Optional[int] = None):
         deque(iterator, maxlen=0)
     else:
         next(islice(iterator, n, n), None)
+
 
 def lsplit(path: str) -> tuple[str, str]:
     index = path.find(sep)

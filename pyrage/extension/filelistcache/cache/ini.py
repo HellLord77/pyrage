@@ -1,11 +1,10 @@
 from ast import literal_eval
-from configparser import ConfigParser
-from configparser import DEFAULTSECT
+from configparser import DEFAULTSECT, ConfigParser
 from itertools import islice
 from typing import Iterator
 
-from . import FileListCache
 from ....utils import File
+from . import FileListCache
 
 
 class INIFileListCache(FileListCache):

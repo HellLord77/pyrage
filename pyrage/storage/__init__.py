@@ -1,33 +1,22 @@
 from __future__ import annotations
 
 import logging
-from abc import ABCMeta
-from abc import abstractmethod
-from concurrent.futures import ThreadPoolExecutor
-from concurrent.futures import as_completed
-from functools import cache
-from functools import partial
+from abc import ABCMeta, abstractmethod
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from functools import cache, partial
 from io import BytesIO
-from itertools import chain
-from itertools import islice
+from itertools import chain, islice
+from threading import get_ident
 from types import MappingProxyType
-from typing import Any
-from typing import Callable
-from typing import Iterable
-from typing import Iterator
-from typing import MutableMapping
-from typing import Optional
+from typing import Any, Callable, Iterable, Iterator, MutableMapping, Optional
 from warnings import deprecated
 
 from tqdm import tqdm
 from tqdm.contrib.concurrent import thread_map
 from tqdm.utils import CallbackIOWrapper
 
-from ..config import STORAGE_DRY_RUN
-from ..config import STORAGE_MAX_THREADS
-from ..utils import File
-from ..utils import Readable
-from ..utils import consume
+from ..config import STORAGE_DRY_RUN, STORAGE_MAX_THREADS
+from ..utils import File, Readable, consume
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +27,7 @@ class Storage(metaclass=ABCMeta):
     _fetch_file_list_init: bool = False
 
     def __init__(self, *_, **__):
+        self._idents = {}
         self._file_list = {}
         self._file_list_proxy = MappingProxyType(self._file_list)
 
@@ -172,11 +162,23 @@ class Storage(metaclass=ABCMeta):
         else:
             total = src.size
             src = self._get_file(src)
+
+        if STORAGE_MAX_THREADS == 1:
+            position = None
+        else:
+            ident = get_ident()
+            try:
+                position = self._idents[ident]
+            except KeyError:
+                position = self._idents[ident] = len(self._idents)
+
         with tqdm(
             total=total,
+            leave=False,
             unit="B",
             unit_scale=True,
             dynamic_ncols=True,
+            position=position,
             unit_divisor=1024,
         ) as t:
             self._set_file(dst, CallbackIOWrapper(t.update, src))
@@ -251,4 +253,6 @@ def _execute(func: Callable[[File], Any], files: Iterable[File]):
         max_workers=STORAGE_MAX_THREADS,
         unit="file",
         dynamic_ncols=True,
+        smoothing=0,
+        position=None if STORAGE_MAX_THREADS == 1 else STORAGE_MAX_THREADS,
     )

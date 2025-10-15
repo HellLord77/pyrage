@@ -1,14 +1,11 @@
-from posixpath import join
-from posixpath import relpath
+from posixpath import join, relpath
 from typing import Iterable
 
 from dropbox import Dropbox
 from dropbox.files import FileMetadata
 
+from ..utils import File, Readable, ReadableResponse
 from . import Storage
-from ..utils import File
-from ..utils import Readable
-from ..utils import ReadableResponse
 
 
 class DropboxStorage(Storage):

@@ -1,24 +1,14 @@
 from io import BytesIO
 from itertools import chain
-from posixpath import join
-from posixpath import split
-from typing import Iterable
-from typing import Optional
+from posixpath import join, split
+from typing import Iterable, Optional
 
-from bson import ObjectId
-from bson import decode
-from bson import encode
-from bson.json_util import DEFAULT_JSON_OPTIONS
-from bson.json_util import JSONOptions
-from bson.json_util import dumps
-from bson.json_util import loads
+from bson import ObjectId, decode, encode
+from bson.json_util import DEFAULT_JSON_OPTIONS, JSONOptions, dumps, loads
 from pymongo import MongoClient
 
+from ..utils import File, Readable, ReadableIterator, iter_join
 from . import Storage
-from ..utils import File
-from ..utils import Readable
-from ..utils import ReadableIterator
-from ..utils import iter_join
 
 
 class MongoStorage(Storage):

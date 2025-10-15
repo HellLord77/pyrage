@@ -1,15 +1,13 @@
 from ftplib import FTP
 from pathlib import PurePosixPath
 from shutil import copyfileobj
-from typing import Iterable
-from typing import Optional
+from typing import Iterable, Optional
 
 from ftputil import FTPHost
 
-from . import Storage
 from ..config import FTP_INCLUDE_HIDDEN
-from ..utils import File
-from ..utils import Readable
+from ..utils import File, Readable
+from . import Storage
 
 
 class _FTPPort(FTP):

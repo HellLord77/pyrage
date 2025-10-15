@@ -1,7 +1,7 @@
 from os.path import splitext
 
-from . import FileFilter
 from ....utils import File
+from . import FileFilter
 
 
 class ExtensionFileFilter(FileFilter):

@@ -1,11 +1,9 @@
-from typing import Iterable
-from typing import Optional
+from typing import Iterable, Optional
 
 from qbittorrentapi import Client
 
+from ..utils import File, Readable
 from . import Storage
-from ..utils import File
-from ..utils import Readable
 
 
 class QBittorrentStorage(Storage):

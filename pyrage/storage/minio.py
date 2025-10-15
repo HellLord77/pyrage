@@ -1,6 +1,5 @@
 from hashlib import md5
-from typing import Iterable
-from typing import Optional
+from typing import Iterable, Optional
 from urllib.parse import urlparse
 
 from minio import Minio
@@ -8,11 +7,9 @@ from minio.deleteobjects import DeleteObject
 from minio.error import InvalidResponseError
 from minio.helpers import MAX_PART_SIZE
 
-from . import Storage
 from ..config import MINIO_RETRY_GENERATE
-from ..utils import File
-from ..utils import Hash
-from ..utils import Readable
+from ..utils import File, Hash, Readable
+from . import Storage
 
 
 class _MinIOCompositeHash(Hash):

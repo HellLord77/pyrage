@@ -1,14 +1,10 @@
 from itertools import starmap
 from typing import Iterator
 
-from msgpack import Packer
-from msgpack import Unpacker
-from msgpack import pack
-from msgpack import unpack
+from msgpack import Packer, Unpacker, pack, unpack
 
+from ....utils import File, consume
 from . import FileListCache
-from ....utils import File
-from ....utils import consume
 
 
 class MsgPackFileListCache(FileListCache):

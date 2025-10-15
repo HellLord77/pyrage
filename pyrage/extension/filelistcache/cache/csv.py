@@ -1,11 +1,9 @@
-from csv import QUOTE_STRINGS
-from csv import reader
-from csv import writer
+from csv import QUOTE_STRINGS, reader, writer
 from itertools import starmap
 from typing import Iterator
 
-from . import FileListCache
 from ....utils import File
+from . import FileListCache
 
 
 class CSVFileListCache(FileListCache):

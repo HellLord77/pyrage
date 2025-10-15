@@ -1,15 +1,12 @@
-from typing import Iterable
-from typing import Optional
+from typing import Iterable, Optional
 from urllib.parse import urlparse
 
 from webdav3.client import Client
 from webdav3.urn import Urn
 
-from . import Storage
 from ..config import WEBDAV_DISABLE_CHECK
-from ..utils import File
-from ..utils import Readable
-from ..utils import ReadableResponse
+from ..utils import File, Readable, ReadableResponse
+from . import Storage
 
 
 class WebDAVStorage(Storage):

@@ -1,13 +1,7 @@
-from abc import ABCMeta
-from abc import abstractmethod
+from abc import ABCMeta, abstractmethod
 from os import makedirs
-from os.path import dirname
-from os.path import exists
-from os.path import getsize
-from os.path import realpath
-from typing import Iterable
-from typing import Iterator
-from typing import Optional
+from os.path import dirname, exists, getsize, realpath
+from typing import Iterable, Iterator, Optional
 
 from ....utils import File
 

@@ -1,10 +1,9 @@
 from abc import ABCMeta
-from typing import Iterable
-from typing import Optional
+from typing import Iterable, Optional
 
-from .cache import FileListCache
 from ...storage import Storage
 from ...utils import File
+from .cache import FileListCache
 
 
 class StorageCache(Storage, metaclass=ABCMeta):

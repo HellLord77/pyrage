@@ -4,12 +4,9 @@ from typing import Iterable
 
 from requests import Session
 
+from ..config import KEMONO_AUTO_SERVER, KEMONO_EXTEND_GENERATE
+from ..utils import File, Readable, ReadableResponse
 from . import Storage
-from ..config import KEMONO_AUTO_SERVER
-from ..config import KEMONO_EXTEND_GENERATE
-from ..utils import File
-from ..utils import Readable
-from ..utils import ReadableResponse
 
 
 class KemonoStorage(Storage):
@@ -29,7 +26,7 @@ class KemonoStorage(Storage):
             response.raise_for_status()
             json = response.json()
             return File(
-                f"{sha256}{json["ext"]}",
+                f"{sha256}{json['ext']}",
                 size=json["size"],
                 mtime=datetime.fromisoformat(json["mtime"]).timestamp(),
                 ctime=datetime.fromisoformat(json["ctime"]).timestamp(),
@@ -74,13 +71,13 @@ class KemonoStorage(Storage):
             response.raise_for_status()
             for post in response.json()["posts"]:
                 response = self._session.get(
-                    f"{self.SERVER}/api/v1/{self._service}/user/{self._creator_id}/post/{post["id"]}"
+                    f"{self.SERVER}/api/v1/{self._service}/user/{self._creator_id}/post/{post['id']}"
                 )
                 response.raise_for_status()
                 for attachment in response.json()["attachments"]:
                     if attachment["stem"] == file.sha256:
                         return self._readable(
-                            f"{attachment["server"]}/data{attachment["path"]}"
+                            f"{attachment['server']}/data{attachment['path']}"
                         )
             raise NotImplementedError
 

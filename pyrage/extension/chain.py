@@ -1,10 +1,8 @@
 from functools import lru_cache
 from posixpath import sep
 
-from .filefilter import PathPrefixFileFilter
-from .filefilter import filter
-from .filetransformer import PathPrefixFileTransformer
-from .filetransformer import transformer
+from .filefilter import PathPrefixFileFilter, filter
+from .filetransformer import PathPrefixFileTransformer, transformer
 from .utils import TStorage
 
 

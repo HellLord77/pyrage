@@ -1,13 +1,9 @@
-from typing import Iterable
-from typing import Optional
+from typing import Iterable, Optional
 
-from gitea import Gitea
-from gitea import Repository
+from gitea import Gitea, Repository
 
+from ..utils import File, Readable, ReadableResponse
 from . import Storage
-from ..utils import File
-from ..utils import Readable
-from ..utils import ReadableResponse
 
 
 class GiteaStorage(Storage):

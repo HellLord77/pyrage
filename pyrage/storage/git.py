@@ -1,12 +1,10 @@
 from os.path import join
-from typing import Iterable
-from typing import Optional
+from typing import Iterable, Optional
 
 from git import Repo
 
+from ..utils import File, Readable
 from . import Storage
-from ..utils import File
-from ..utils import Readable
 
 
 class GitStorage(Storage):

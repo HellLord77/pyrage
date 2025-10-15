@@ -1,5 +1,5 @@
-from . import FileFilter
 from ....utils import File
+from . import FileFilter
 
 
 class PathPrefixFileFilter(FileFilter):

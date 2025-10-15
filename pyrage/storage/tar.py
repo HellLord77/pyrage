@@ -1,10 +1,8 @@
 from tarfile import TarFile
-from typing import BinaryIO
-from typing import Iterable
+from typing import BinaryIO, Iterable
 
+from ..utils import File, Readable
 from . import Storage
-from ..utils import File
-from ..utils import Readable
 
 
 class TarStorage(Storage):
