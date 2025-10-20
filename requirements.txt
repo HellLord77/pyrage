@@ -12,6 +12,7 @@ GitPython
 internetarchive
 minio
 paramiko
+pokemontcgsdk
 py-gitea
 PyGithub
 python-gitlab

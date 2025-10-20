@@ -30,6 +30,10 @@ MYRIENT_RETRY_EXTEND_GENERATE: Final[bool] = (
     os.getenv("MYRIENT_RETRY_EXTEND_GENERATE", "false").lower() == "true"
 )
 
+POKEMON_TCG_EXTEND_GENERATE: Final[bool] = (
+    os.getenv("POKEMON_TCG_EXTEND_GENERATE", "false").lower() == "true"
+)
+
 ROMM_FLAT_PATH: Final[bool] = os.getenv("ROMM_FLAT_PATH", "false").lower() == "true"
 
 SFTP_AUTO_ADD: Final[bool] = os.getenv("SFTP_AUTO_ADD", "false").lower() == "true"

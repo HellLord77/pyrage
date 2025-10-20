@@ -10,11 +10,12 @@ from .storage.kemono import KemonoStorage
 from .storage.local import LocalStorage
 from .storage.minio import MinIOStorage
 from .storage.myrient import MyrientStorage
+from .storage.pokemontcgimages import PokemonTCGImagesStorage
 from .storage.s3 import S3Storage
 from .storage.sftp import SFTPStorage
 from .storage.steam import SteamStorage
 from .storage.tar import TarStorage
-from .storage.tcgdex import TCGDexStorage
+from .storage.tcgdexassets import TCGDexAssetsStorage
 from .storage.webdav import WebDAVStorage
 from .storage.zip import ZipStorage
 from .utils import File, Readable, Writable

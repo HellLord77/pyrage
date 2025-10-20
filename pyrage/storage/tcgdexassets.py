@@ -1,9 +1,8 @@
 from functools import partial
-from http.client import NOT_FOUND
 from typing import Callable, Iterable, Optional
 from urllib.parse import urlparse
 
-from requests import HTTPError, Session
+from requests import Session
 from tcgdexsdk import Language, TCGdex
 from tcgdexsdk.enums import Extension, Quality
 
@@ -12,7 +11,7 @@ from ..utils import File, Readable, ReadableResponse
 from . import Storage
 
 
-class TCGDexStorage(Storage):
+class TCGDexAssetsStorage(Storage):
     def __init__(
         self, language: str | Language = Language.EN, endpoint: str = TCGdex.endpoint
     ):
@@ -27,22 +26,8 @@ class TCGDexStorage(Storage):
                 path = urlparse(url).path.lstrip("/")
                 if TCGDEX_EXTEND_GENERATE:
                     response = self._session.head(url)
-                    try:
-                        response.raise_for_status()
-                    except (
-                        HTTPError
-                    ):  # FIXME https://github.com/tcgdex/cards-database/issues/937
-                        if response.status_code != NOT_FOUND:
-                            raise
-                    else:
-                        yield File(
-                            path,
-                            size=int(
-                                response.headers.get(
-                                    "Content-Length", "0"
-                                )  # FIXME https://github.com/tcgdex/cards-database/issues/937
-                            ),
-                        )
+                    response.raise_for_status()
+                    yield File(path, size=int(response.headers["Content-Length"]))
                 else:
                     yield File(path)
 
