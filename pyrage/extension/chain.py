@@ -13,11 +13,16 @@ def cwd(storage: type[TStorage], dir: str) -> type[TStorage]:
     storage_cwd = transformer(
         filter(storage, PathPrefixFileFilter), PathPrefixFileTransformer
     )
-    __init__ = lambda self, *args, **kwargs: super(storage_cwd, self).__init__(
-        *args,
-        **kwargs,
-        filter_kwargs=extension_kwargs,
-        transformer_kwargs=extension_kwargs,
-    )
     # noinspection PyTypeChecker
-    return type(f"{storage.__name__}_CWD", (storage_cwd,), {"__init__": __init__})
+    return type(
+        f"{storage.__name__}_CWD",
+        (storage_cwd,),
+        {
+            "__init__": lambda self, *args, **kwargs: super(storage_cwd, self).__init__(
+                *args,
+                **kwargs,
+                filter_kwargs=extension_kwargs,
+                transformer_kwargs=extension_kwargs,
+            )
+        },
+    )

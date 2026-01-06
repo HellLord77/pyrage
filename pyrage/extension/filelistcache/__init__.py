@@ -2,11 +2,10 @@ from functools import lru_cache
 
 from ..utils import TStorage
 from .cache import FileListCache
-from .cache.csv import CSVFileListCache
-from .cache.ini import CompatINIFileListCache as _INIFileListCache
-from .cache.json import JSONFileListCache
-from .cache.pickle import StreamingPickleFileListCache as PickleFileListCache
-from .cache.sqlite import SqliteFileListCache
+from .cache.csv import CSVFileListCache as CSVFileListCache
+from .cache.json import JSONFileListCache as JSONFileListCache
+from .cache.pickle import PickleFileListCache as PickleFileListCache
+from .cache.sqlite import SqliteFileListCache as SqliteFileListCache
 from .utils import StorageCache
 
 

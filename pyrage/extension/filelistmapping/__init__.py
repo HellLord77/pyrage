@@ -2,8 +2,8 @@ from functools import lru_cache
 
 from ..utils import TStorage
 from .mapping import FileListMapping
-from .mapping.local import LocalFileListMapping
-from .mapping.sqlite import SqliteFileListMapping
+from .mapping.local import LocalFileListMapping as LocalFileListMapping
+from .mapping.sqlite import SqliteFileListMapping as SqliteFileListMapping
 from .utils import StorageMapping
 
 

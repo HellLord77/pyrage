@@ -30,7 +30,7 @@ class DDLStorage(Storage):
 
     def _generate_file_list(self) -> Iterable[File]:
         if self._name is None or self._size is None:
-            response = self._session.head(self._url,allow_redirects=True)
+            response = self._session.head(self._url, allow_redirects=True)
             response.raise_for_status()
             if self._name is None:  # TODO headers.get("Content-Disposition")
                 self._name = urlparse(self._url).path.split("/")[-1]

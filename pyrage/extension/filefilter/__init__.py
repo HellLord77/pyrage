@@ -2,9 +2,9 @@ from functools import lru_cache
 
 from ..utils import TStorage
 from .filter import FileFilter
-from .filter.extension import ExtensionFileFilter
-from .filter.filetype import FileTypeFileFilter
-from .filter.pathprefix import PathPrefixFileFilter
+from .filter.extension import ExtensionFileFilter as ExtensionFileFilter
+from .filter.filetype import FileTypeFileFilter as FileTypeFileFilter
+from .filter.pathprefix import PathPrefixFileFilter as PathPrefixFileFilter
 from .utils import StorageFilter
 
 

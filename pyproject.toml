@@ -1,0 +1,75 @@
+[project]
+name = "pyrage"
+version = "0.0.0"
+requires-python = "~=3.14.0"
+dependencies = ["iterable-io", "tqdm"]
+
+[dependency-groups]
+dev = [
+  "mypy",
+  "isort",
+  "ruff",
+
+  "types-requests",
+  "types-tqdm",
+  "types-boto3",
+  "types-redis",
+  "types-tqdm",
+]
+
+storage-ddl = ["requests"]
+storage-dropbox = ["dropbox"]
+storage-git = ["GitPython"]
+storage-gitea = ["py-gitea"]
+storage-github = ["PyGithub", "requests"]
+storage-gitlab = ["python-gitlab"]
+storage-internetarchive = ["internetarchive"]
+storage-karaokemugen = ["requests"]
+storage-kemono = ["requests"]
+storage-lexaloffle = ["requests"]
+storage-local = []
+storage-minio = ["minio"]
+storage-myrient = ["beautifulsoup4", "requests"]
+storage-pokemontcgimages = ["pokemontcgsdk", "requests"]
+storage-s3 = ["boto3"]
+storage-sftf = ["paramiko"]
+storage-steam = [
+  "steam[client] @ git+https://github.com/solsticegamestudios/steam.git@30437f32e625b52c6cee34dac5eb14652447379f",
+  "zstandard",
+]
+storage-tar = []
+storage-tcgdexassets = ["requests", "tcgdex-sdk"]
+storage-webdav = ["webdavclient3"]
+storage-zip = []
+
+extension-filefilter = []
+
+extension-filelistcache-bson = ["PyMongo"]
+extension-filelistcache-csv = []
+extension-filelistcache-flat = ["flatbuffers"]
+extension-filelistcache-json = []
+extension-filelistcache-msgpack = ["msgpack"]
+extension-filelistcache-proto = ["protobuf"]
+extension-filelistcache-pickle = []
+extension-filelistcache-sqlite = []
+
+extnesion-filelistmapping-local = []
+extnesion-filelistmapping-redis = ["redis"]
+extnesion-filelistmapping-sqlite = []
+
+extension-filetransformer = []
+
+test-storage-docker = ["docker"]
+test-storage-ftp = ["ftputil"]
+test-storage-mongo = ["pymongo"]
+test-storage-qbtorrent = ["qbittorrent-api"]
+test-storage-romm = ["requests", "requests-toolbelt"]
+test-storage-smb = ["smbprotocol"]
+test-storage-waybackmachine = ["wayback"]
+test-extension-filelistcache-ini = []
+
+[tool.uv]
+default-groups = "all"
+
+[tool.ruff.lint.isort]
+force-single-line = true
