@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from collections import deque
 from collections.abc import Callable
 from collections.abc import Iterable
@@ -15,7 +13,6 @@ from typing import Any
 from typing import NamedTuple
 from typing import Protocol
 from typing import TypeVar
-from warnings import deprecated
 from zlib import crc32
 
 from iterableio import open_iterable
@@ -71,7 +68,6 @@ def ReadableIterator(iterable: Iterable[bytes]) -> Readable:
     return open_iterable(iterable, "rb")
 
 
-@deprecated("python-httpfile")
 # noinspection PyPep8Naming
 def ReadableResponse(response: Response) -> Readable:
     response.raise_for_status()
