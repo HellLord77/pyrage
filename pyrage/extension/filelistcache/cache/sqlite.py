@@ -1,6 +1,6 @@
+from collections.abc import Iterator
 from itertools import starmap
 from sqlite3 import connect
-from typing import Iterator
 
 from ....utils import File
 from . import FileListCache
@@ -15,7 +15,7 @@ class SqliteFileListCache(FileListCache):
             cur.execute(
                 """
                 DROP TABLE IF EXISTS _;
-                """
+                """,
             )
             cur.execute(
                 """
@@ -30,7 +30,7 @@ class SqliteFileListCache(FileListCache):
                     sha1 VARCHAR(40),
                     sha256 VARCHAR(64)
                 );
-                """
+                """,
             )
             cur.executemany(
                 """
@@ -49,7 +49,7 @@ class SqliteFileListCache(FileListCache):
                 con.execute(
                     """
                     SELECT * FROM _;
-                    """
+                    """,
                 ),
             )
         con.close()

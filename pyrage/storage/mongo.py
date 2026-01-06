@@ -1,28 +1,29 @@
+from collections.abc import Iterable
 from io import BytesIO
 from itertools import chain
-from posixpath import join, split
-from typing import Iterable, Optional
+from posixpath import join
+from posixpath import split
 
-from bson import ObjectId, decode, encode
-from bson.json_util import DEFAULT_JSON_OPTIONS, JSONOptions, dumps, loads
+from bson import ObjectId
+from bson import decode
+from bson import encode
+from bson.json_util import DEFAULT_JSON_OPTIONS
+from bson.json_util import JSONOptions
+from bson.json_util import dumps
+from bson.json_util import loads
 from pymongo import MongoClient
 
-from ..utils import File, Readable, ReadableIterator, iter_join
+from ..utils import File
+from ..utils import Readable
+from ..utils import ReadableIterator
+from ..utils import iter_join
 from . import Storage
 
 
 class MongoStorage(Storage):
-    def __init__(
-        self,
-        database: Optional[str] = None,
-        uri: Optional[str] = None,
-    ):
+    def __init__(self, database: str | None = None, uri: str | None = None):
         client = MongoClient(uri)
-        self._db = (
-            client.get_default_database()
-            if database is None
-            else client.get_database(database)
-        )
+        self._db = client.get_default_database() if database is None else client.get_database(database)
         super().__init__()
 
     def _generate_file_list(self) -> Iterable[File]:
@@ -56,8 +57,8 @@ class JSONMongoStorage(MongoStorage):
 
     def __init__(
         self,
-        database: Optional[str] = None,
-        uri: Optional[str] = None,
+        database: str | None = None,
+        uri: str | None = None,
         json_options: JSONOptions = DEFAULT_JSON_OPTIONS,
     ):
         self._json_options = json_options
@@ -74,16 +75,12 @@ class JSONMongoStorage(MongoStorage):
                 iter_join(
                     self.SEP,
                     (
-                        dumps(
-                            document,
-                            json_options=self._json_options,
-                            **self.KWARGS,
-                        ).encode()
+                        dumps(document, json_options=self._json_options, **self.KWARGS).encode()
                         for document in self._db.get_collection(file.path).find()
                     ),
                 ),
                 (b"]",),
-            )
+            ),
         )
 
     def _set_file(self, file: File, readable: Readable):

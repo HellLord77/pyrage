@@ -1,7 +1,12 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
+from abc import abstractmethod
+from collections.abc import Iterable
+from collections.abc import Iterator
 from os import makedirs
-from os.path import dirname, exists, getsize, realpath
-from typing import Iterable, Iterator, Optional
+from os.path import dirname
+from os.path import exists
+from os.path import getsize
+from os.path import realpath
 
 from ....utils import File
 
@@ -9,7 +14,7 @@ from ....utils import File
 class FileListCache(metaclass=ABCMeta):
     EXTENSION: str
 
-    def __init__(self, path: Optional[str] = None):
+    def __init__(self, path: str | None = None):
         if path is None:
             path = f"{type(self).__name__}.{self.EXTENSION}"
         self.path = realpath(path)
@@ -22,9 +27,7 @@ class FileListCache(metaclass=ABCMeta):
     def _load(self) -> Iterator[File]:
         raise NotImplementedError
 
-    def generate(
-        self, generator: Iterable[File], files: Iterable[File]
-    ) -> Iterator[File]:
+    def generate(self, generator: Iterable[File], files: Iterable[File]) -> Iterator[File]:
         if exists(self.path) and getsize(self.path):
             yield from self._load()
         else:

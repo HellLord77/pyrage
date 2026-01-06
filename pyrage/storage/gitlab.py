@@ -1,9 +1,11 @@
-from typing import Iterable, Optional
+from collections.abc import Iterable
 
 from gitlab import Gitlab
 from gitlab.utils import EncodedId
 
-from ..utils import File, Readable, ReadableResponse
+from ..utils import File
+from ..utils import Readable
+from ..utils import ReadableResponse
 from . import Storage
 
 
@@ -12,22 +14,18 @@ class GitlabStorage(Storage):
         self,
         owner: int | str,
         repo: str = "",
-        ref: Optional[str] = None,
-        url: Optional[str] = None,
+        ref: str | None = None,
+        url: str | None = None,
     ):
-        self._repo = Gitlab(url).projects.get(
-            owner if isinstance(owner, int) else f"{owner}/{repo}"
-        )
+        self._repo = Gitlab(url).projects.get(owner if isinstance(owner, int) else f"{owner}/{repo}")
         if ref is None:
             ref = self._repo.default_branch
         self._ref = ref
         super().__init__()
 
     def _generate_file_list(self) -> Iterable[File]:
-        for element in self._repo.repository_tree(
-            ref=self._ref, recursive=True, iterator=True, get_all=True
-        ):
-            if "blob" == element["type"]:
+        for element in self._repo.repository_tree(ref=self._ref, recursive=True, iterator=True, get_all=True):
+            if element["type"] == "blob":
                 yield File(element["path"])
 
     def _get_file(self, file: File) -> Readable:
@@ -36,7 +34,7 @@ class GitlabStorage(Storage):
                 f"{self._repo.files.path}/{EncodedId(file.path)}/raw",
                 {"ref": self._ref},
                 True,
-            )
+            ),
         )
 
     def _set_file(self, file: File, readable: Readable):

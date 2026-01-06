@@ -1,7 +1,9 @@
+from collections.abc import Iterable
 from tarfile import TarFile
-from typing import BinaryIO, Iterable
+from typing import BinaryIO
 
-from ..utils import File, Readable
+from ..utils import File
+from ..utils import Readable
 from . import Storage
 
 

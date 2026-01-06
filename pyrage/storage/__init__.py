@@ -1,22 +1,33 @@
 from __future__ import annotations
 
 import logging
-from abc import ABCMeta, abstractmethod
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from functools import cache, partial
+from abc import ABCMeta
+from abc import abstractmethod
+from collections.abc import Callable
+from collections.abc import Iterable
+from collections.abc import Iterator
+from collections.abc import MutableMapping
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import as_completed
+from functools import cache
+from functools import partial
 from io import BytesIO
-from itertools import chain, islice
+from itertools import chain
+from itertools import islice
 from threading import get_ident
 from types import MappingProxyType
-from typing import Any, Callable, Iterable, Iterator, MutableMapping, Optional
+from typing import Any
 from warnings import deprecated
 
 from tqdm import tqdm
 from tqdm.contrib.concurrent import thread_map
 from tqdm.utils import CallbackIOWrapper
 
-from ..config import STORAGE_DRY_RUN, STORAGE_MAX_THREADS
-from ..utils import File, Readable, consume
+from ..config import STORAGE_DRY_RUN
+from ..config import STORAGE_MAX_THREADS
+from ..utils import File
+from ..utils import Readable
+from ..utils import consume
 
 logger = logging.getLogger(__name__)
 
@@ -60,9 +71,7 @@ class Storage(metaclass=ABCMeta):
             self._fetch_file_list()
         return self._file_list_proxy
 
-    def rev_diff_file_list(
-        self, files: Iterable[File], *, strict: bool = True
-    ) -> Iterator[File]:
+    def rev_diff_file_list(self, files: Iterable[File], *, strict: bool = True) -> Iterator[File]:
         file_list = self.fetch_file_list()
         for file in files:
             try:
@@ -87,9 +96,7 @@ class Storage(metaclass=ABCMeta):
                     yield file
 
     @deprecated("")
-    def intersection(
-        self, files: Iterable[File], *, strict: bool = True
-    ) -> Iterator[File]:
+    def intersection(self, files: Iterable[File], *, strict: bool = True) -> Iterator[File]:
         if isinstance(files, Storage):
             files = files.fetch_file_list()
         else:
@@ -104,9 +111,7 @@ class Storage(metaclass=ABCMeta):
                     yield file
 
     @deprecated("")
-    def difference(
-        self, files: Iterable[File], *, strict: bool = True
-    ) -> Iterator[File]:
+    def difference(self, files: Iterable[File], *, strict: bool = True) -> Iterator[File]:
         if isinstance(files, Storage):
             files = files.fetch_file_list()
         else:
@@ -124,10 +129,10 @@ class Storage(metaclass=ABCMeta):
     def _get_file(self, file: File) -> Readable:
         raise NotImplementedError
 
-    def get_file(self, file: File) -> Optional[Readable]:
+    def get_file(self, file: File) -> Readable | None:
         return _run(partial(self._get_file, file))
 
-    def get_file_data(self, file: File) -> Optional[bytes]:
+    def get_file_data(self, file: File) -> bytes | None:
         readable = self.get_file(file)
         if readable is not None:
             return readable.read()

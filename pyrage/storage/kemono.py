@@ -1,11 +1,14 @@
+from collections.abc import Iterable
 from datetime import datetime
 from os.path import splitext
-from typing import Iterable
 
 from requests import Session
 
-from ..config import KEMONO_AUTO_SERVER, KEMONO_EXTEND_GENERATE
-from ..utils import File, Readable, ReadableResponse
+from ..config import KEMONO_AUTO_SERVER
+from ..config import KEMONO_EXTEND_GENERATE
+from ..utils import File
+from ..utils import Readable
+from ..utils import ReadableResponse
 from . import Storage
 
 
@@ -32,8 +35,7 @@ class KemonoStorage(Storage):
                 ctime=datetime.fromisoformat(json["ctime"]).timestamp(),
                 sha256=sha256,
             )
-        else:
-            return File(name, sha256=sha256)
+        return File(name, sha256=sha256)
 
     def _generate_file_list(self) -> Iterable[File]:
         offset = 0
@@ -61,25 +63,18 @@ class KemonoStorage(Storage):
 
     def _get_file(self, file: File) -> Readable:
         if KEMONO_AUTO_SERVER:
-            return self._readable(
-                f"{self.SERVER}/{file.path[:2]}/{file.path[2:4]}/{file.path}"
-            )
-        else:
+            return self._readable(f"{self.SERVER}/{file.path[:2]}/{file.path[2:4]}/{file.path}")
+        response = self._session.get(f"{self.SERVER}/api/v1/search_hash/{file.sha256}")
+        response.raise_for_status()
+        for post in response.json()["posts"]:
             response = self._session.get(
-                f"{self.SERVER}/api/v1/search_hash/{file.sha256}"
+                f"{self.SERVER}/api/v1/{self._service}/user/{self._creator_id}/post/{post['id']}",
             )
             response.raise_for_status()
-            for post in response.json()["posts"]:
-                response = self._session.get(
-                    f"{self.SERVER}/api/v1/{self._service}/user/{self._creator_id}/post/{post['id']}"
-                )
-                response.raise_for_status()
-                for attachment in response.json()["attachments"]:
-                    if attachment["stem"] == file.sha256:
-                        return self._readable(
-                            f"{attachment['server']}/data{attachment['path']}"
-                        )
-            raise NotImplementedError
+            for attachment in response.json()["attachments"]:
+                if attachment["stem"] == file.sha256:
+                    return self._readable(f"{attachment['server']}/data{attachment['path']}")
+        raise NotImplementedError
 
     def _set_file(self, file: File, readable: Readable):
         raise NotImplementedError

@@ -17,6 +17,7 @@ dev = [
   "types-tqdm",
 ]
 
+storage-alist = ["h2", "python-alist"]
 storage-ddl = ["requests"]
 storage-dropbox = ["dropbox"]
 storage-git = ["GitPython"]
@@ -71,5 +72,8 @@ test-extension-filelistcache-ini = []
 [tool.uv]
 default-groups = "all"
 
-[tool.ruff.lint.isort]
-force-single-line = true
+[tool.ruff]
+line-length = 120
+
+[tool.isort]
+force_single_line = true

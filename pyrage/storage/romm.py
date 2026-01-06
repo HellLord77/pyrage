@@ -1,11 +1,13 @@
+from collections.abc import Iterable
 from datetime import datetime
-from typing import Iterable, Optional
 
 from requests import Session
 from requests_toolbelt import MultipartEncoder
 
 from ..config import ROMM_FLAT_PATH
-from ..utils import File, Readable, ReadableResponse
+from ..utils import File
+from ..utils import Readable
+from ..utils import ReadableResponse
 from . import Storage
 
 
@@ -14,7 +16,7 @@ class RomMStorage(Storage):
         self,
         platform_id: int | str,
         host: str = "https://demo.romm.app",
-        auth: Optional[tuple[str, str]] = None,
+        auth: tuple[str, str] | None = None,
     ):
         self._host = host
         self._session = Session()
@@ -60,13 +62,10 @@ class RomMStorage(Storage):
     def _get_file(self, file: File) -> Readable:
         if ROMM_FLAT_PATH:
             raise NotImplementedError
-        else:
-            rom_id, file_name = file.path.split("/", 1)
-            return ReadableResponse(
-                self._session.get(
-                    f"{self._host}/api/roms/{rom_id}/content/{file_name}", stream=True
-                )
-            )
+        rom_id, file_name = file.path.split("/", 1)
+        return ReadableResponse(
+            self._session.get(f"{self._host}/api/roms/{rom_id}/content/{file_name}", stream=True),
+        )
 
     def _set_file(self, file: File, readable: Readable):
         data = MultipartEncoder({file.path: readable})

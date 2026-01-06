@@ -1,8 +1,10 @@
 from abc import ABCMeta
-from typing import Iterable, Mapping
+from collections.abc import Iterable
+from collections.abc import Mapping
 
 from ...storage import Storage
-from ...utils import File, Readable
+from ...utils import File
+from ...utils import Readable
 from .transformer import FileTransformer
 
 
@@ -17,9 +19,7 @@ class StorageTransformer(Storage, metaclass=ABCMeta):
         transformer_kwargs: Mapping = {},
         **kwargs,
     ):
-        self._file_transformer = self._t_file_transformer(
-            *transformer_args, **transformer_kwargs
-        )
+        self._file_transformer = self._t_file_transformer(*transformer_args, **transformer_kwargs)
         super().__init__(*args, **kwargs)
 
     def _generate_file_list(self) -> Iterable[File]:

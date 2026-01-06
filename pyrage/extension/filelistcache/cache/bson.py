@@ -1,8 +1,12 @@
-from typing import Iterable, Iterator
+from collections.abc import Iterable
+from collections.abc import Iterator
 
-from bson import decode, decode_file_iter, encode
+from bson import decode
+from bson import decode_file_iter
+from bson import encode
 
-from ....utils import File, consume
+from ....utils import File
+from ....utils import consume
 from . import FileListCache
 
 

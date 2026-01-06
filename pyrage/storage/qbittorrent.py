@@ -1,8 +1,9 @@
-from typing import Iterable, Optional
+from collections.abc import Iterable
 
 from qbittorrentapi import Client
 
-from ..utils import File, Readable
+from ..utils import File
+from ..utils import Readable
 from . import Storage
 
 
@@ -11,8 +12,8 @@ class QBittorrentStorage(Storage):
         self,
         host: str,
         port: int = 8080,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
+        username: str | None = None,
+        password: str | None = None,
     ):  # TODO torrent
         self._client = Client(host, port, username, password)
         super().__init__()

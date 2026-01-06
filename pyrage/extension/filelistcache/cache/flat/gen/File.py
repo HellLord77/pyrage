@@ -8,7 +8,7 @@ from flatbuffers.compat import import_numpy
 np = import_numpy()
 
 
-class File(object):
+class File:
     __slots__ = ["_tab"]
 
     @classmethod
@@ -45,27 +45,21 @@ class File(object):
     def Mtime(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
         if o != 0:
-            return self._tab.Get(
-                flatbuffers.number_types.Float64Flags, o + self._tab.Pos
-            )
+            return self._tab.Get(flatbuffers.number_types.Float64Flags, o + self._tab.Pos)
         return 0.0
 
     # File
     def Atime(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
         if o != 0:
-            return self._tab.Get(
-                flatbuffers.number_types.Float64Flags, o + self._tab.Pos
-            )
+            return self._tab.Get(flatbuffers.number_types.Float64Flags, o + self._tab.Pos)
         return 0.0
 
     # File
     def Ctime(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
         if o != 0:
-            return self._tab.Get(
-                flatbuffers.number_types.Float64Flags, o + self._tab.Pos
-            )
+            return self._tab.Get(flatbuffers.number_types.Float64Flags, o + self._tab.Pos)
         return 0.0
 
     # File
@@ -106,9 +100,7 @@ def Start(builder):
 
 
 def FileAddPath(builder, path):
-    builder.PrependUOffsetTRelativeSlot(
-        0, flatbuffers.number_types.UOffsetTFlags.py_type(path), 0
-    )
+    builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(path), 0)
 
 
 def AddPath(builder, path):
@@ -148,9 +140,7 @@ def AddCtime(builder, ctime):
 
 
 def FileAddCrc32(builder, crc32):
-    builder.PrependUOffsetTRelativeSlot(
-        5, flatbuffers.number_types.UOffsetTFlags.py_type(crc32), 0
-    )
+    builder.PrependUOffsetTRelativeSlot(5, flatbuffers.number_types.UOffsetTFlags.py_type(crc32), 0)
 
 
 def AddCrc32(builder, crc32):
@@ -158,9 +148,7 @@ def AddCrc32(builder, crc32):
 
 
 def FileAddMd5(builder, md5):
-    builder.PrependUOffsetTRelativeSlot(
-        6, flatbuffers.number_types.UOffsetTFlags.py_type(md5), 0
-    )
+    builder.PrependUOffsetTRelativeSlot(6, flatbuffers.number_types.UOffsetTFlags.py_type(md5), 0)
 
 
 def AddMd5(builder, md5):
@@ -168,9 +156,7 @@ def AddMd5(builder, md5):
 
 
 def FileAddSha1(builder, sha1):
-    builder.PrependUOffsetTRelativeSlot(
-        7, flatbuffers.number_types.UOffsetTFlags.py_type(sha1), 0
-    )
+    builder.PrependUOffsetTRelativeSlot(7, flatbuffers.number_types.UOffsetTFlags.py_type(sha1), 0)
 
 
 def AddSha1(builder, sha1):
@@ -178,9 +164,7 @@ def AddSha1(builder, sha1):
 
 
 def FileAddSha256(builder, sha256):
-    builder.PrependUOffsetTRelativeSlot(
-        8, flatbuffers.number_types.UOffsetTFlags.py_type(sha256), 0
-    )
+    builder.PrependUOffsetTRelativeSlot(8, flatbuffers.number_types.UOffsetTFlags.py_type(sha256), 0)
 
 
 def AddSha256(builder, sha256):

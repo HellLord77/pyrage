@@ -1,11 +1,17 @@
-from hashlib import md5, sha1, sha256
+from collections.abc import Iterable
+from hashlib import md5
+from hashlib import sha1
+from hashlib import sha256
 from pathlib import Path
 from shutil import copyfileobj
 from tempfile import mkdtemp
-from typing import Iterable
 
 from ..config import LOCAL_EXTEND_GENERATE
-from ..utils import CRC32Hash, File, Readable, WritableHash, WritableTee
+from ..utils import CRC32Hash
+from ..utils import File
+from ..utils import Readable
+from ..utils import WritableHash
+from ..utils import WritableTee
 from . import Storage
 
 

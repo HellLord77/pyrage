@@ -1,4 +1,4 @@
-from typing import Iterator, Optional
+from collections.abc import Iterator
 
 from redis import Redis
 
@@ -7,7 +7,7 @@ from . import FileListMapping
 
 
 class RedisFileListMapping(FileListMapping):
-    def __init__(self, url: Optional[str] = None):
+    def __init__(self, url: str | None = None):
         self._mapping = Redis() if url is None else Redis.from_url(url)
         super().__init__()
 

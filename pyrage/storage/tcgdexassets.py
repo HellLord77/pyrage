@@ -1,26 +1,29 @@
+from collections.abc import Callable
+from collections.abc import Iterable
 from functools import partial
-from typing import Callable, Iterable, Optional
 from urllib.parse import urlparse
 
 from requests import Session
-from tcgdexsdk import Language, TCGdex
-from tcgdexsdk.enums import Extension, Quality
+from tcgdexsdk import Language
+from tcgdexsdk import TCGdex
+from tcgdexsdk.enums import Extension
+from tcgdexsdk.enums import Quality
 
 from ..config import TCGDEX_EXTEND_GENERATE
-from ..utils import File, Readable, ReadableResponse
+from ..utils import File
+from ..utils import Readable
+from ..utils import ReadableResponse
 from . import Storage
 
 
 class TCGDexAssetsStorage(Storage):
-    def __init__(
-        self, language: str | Language = Language.EN, endpoint: str = TCGdex.endpoint
-    ):
+    def __init__(self, language: str | Language = Language.EN, endpoint: str = TCGdex.endpoint):
         self._tcgdex = TCGdex(language)
         self._tcgdex.setEndpoint(endpoint)
         self._session = Session()
         super().__init__()
 
-    def _files(self, get_url: Callable[[Extension], Optional[str]]) -> Iterable[File]:
+    def _files(self, get_url: Callable[[Extension], str | None]) -> Iterable[File]:
         for extension in Extension:
             if (url := get_url(extension)) is not None:
                 path = urlparse(url).path.lstrip("/")
@@ -42,9 +45,7 @@ class TCGDexAssetsStorage(Storage):
                 yield from self._files(partial(card.get_image_url, quality))
 
     def _get_file(self, file: File) -> Readable:
-        return ReadableResponse(
-            self._session.get(f"https://assets.tcgdex.net/{file.path}", stream=True)
-        )
+        return ReadableResponse(self._session.get(f"https://assets.tcgdex.net/{file.path}", stream=True))
 
     def _set_file(self, file: File, readable: Readable):
         raise NotImplementedError

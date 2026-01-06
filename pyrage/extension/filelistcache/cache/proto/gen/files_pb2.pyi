@@ -1,9 +1,5 @@
-from typing import (
-    ClassVar as _ClassVar,
-    Mapping as _Mapping,
-    Optional as _Optional,
-    Union as _Union,
-)
+from collections.abc import Mapping as _Mapping
+from typing import ClassVar as _ClassVar
 
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
@@ -16,14 +12,14 @@ class Files(_message.Message):
 
     class File(_message.Message):
         __slots__ = (
-            "size",
-            "mtime",
             "atime",
-            "ctime",
             "crc32",
+            "ctime",
             "md5",
+            "mtime",
             "sha1",
             "sha256",
+            "size",
         )
         SIZE_FIELD_NUMBER: _ClassVar[int]
         MTIME_FIELD_NUMBER: _ClassVar[int]
@@ -43,14 +39,14 @@ class Files(_message.Message):
         sha256: str
         def __init__(
             self,
-            size: _Optional[int] = ...,
-            mtime: _Optional[float] = ...,
-            atime: _Optional[float] = ...,
-            ctime: _Optional[float] = ...,
-            crc32: _Optional[str] = ...,
-            md5: _Optional[str] = ...,
-            sha1: _Optional[str] = ...,
-            sha256: _Optional[str] = ...,
+            size: int | None = ...,
+            mtime: float | None = ...,
+            atime: float | None = ...,
+            ctime: float | None = ...,
+            crc32: str | None = ...,
+            md5: str | None = ...,
+            sha1: str | None = ...,
+            sha256: str | None = ...,
         ) -> None: ...
 
     class FilesEntry(_message.Message):
@@ -59,12 +55,8 @@ class Files(_message.Message):
         VALUE_FIELD_NUMBER: _ClassVar[int]
         key: str
         value: Files.File
-        def __init__(
-            self,
-            key: _Optional[str] = ...,
-            value: _Optional[_Union[Files.File, _Mapping]] = ...,
-        ) -> None: ...
+        def __init__(self, key: str | None = ..., value: Files.File | _Mapping | None = ...) -> None: ...
 
     FILES_FIELD_NUMBER: _ClassVar[int]
     files: _containers.MessageMap[str, Files.File]
-    def __init__(self, files: _Optional[_Mapping[str, Files.File]] = ...) -> None: ...
+    def __init__(self, files: _Mapping[str, Files.File] | None = ...) -> None: ...

@@ -1,5 +1,5 @@
+from collections.abc import Iterable
 from hashlib import md5
-from typing import Iterable, Optional
 from urllib.parse import urlparse
 
 from minio import Minio
@@ -8,7 +8,9 @@ from minio.error import InvalidResponseError
 from minio.helpers import MAX_PART_SIZE
 
 from ..config import MINIO_RETRY_GENERATE
-from ..utils import File, Hash, Readable
+from ..utils import File
+from ..utils import Hash
+from ..utils import Readable
 from . import Storage
 
 
@@ -54,13 +56,11 @@ class MinIOStorage(Storage):
         self,
         endpoint: str,
         bucket: str,
-        access_key: Optional[str] = None,
-        secret_key: Optional[str] = None,
+        access_key: str | None = None,
+        secret_key: str | None = None,
     ):
         parts = urlparse(endpoint)
-        self._minio = Minio(
-            parts.netloc, access_key, secret_key, secure="https" == parts.scheme
-        )
+        self._minio = Minio(parts.netloc, access_key, secret_key, secure=parts.scheme == "https")
         self._bucket = bucket
         super().__init__()
 
@@ -69,9 +69,7 @@ class MinIOStorage(Storage):
         object_ = None
         while True:
             try:
-                for object_ in self._minio.list_objects(
-                    self._bucket, recursive=True, start_after=start_after
-                ):
+                for object_ in self._minio.list_objects(self._bucket, recursive=True, start_after=start_after):
                     yield File(
                         object_.object_name,
                         size=object_.size,
@@ -90,9 +88,7 @@ class MinIOStorage(Storage):
     def __generate_file_list(self) -> Iterable[File]:
         prefixes = [""]
         while prefixes:
-            for object_ in self._minio.list_objects(
-                self._bucket, prefix=prefixes.pop(0)
-            ):
+            for object_ in self._minio.list_objects(self._bucket, prefix=prefixes.pop(0)):
                 if object_.is_dir:
                     prefixes.append(object_.object_name)
                 else:
@@ -103,15 +99,11 @@ class MinIOStorage(Storage):
 
     def _set_file(self, file: File, readable: Readable):
         # noinspection PyTypeChecker
-        self._minio.put_object(
-            self._bucket, file.path, readable, -1, part_size=MAX_PART_SIZE
-        )
+        self._minio.put_object(self._bucket, file.path, readable, -1, part_size=MAX_PART_SIZE)
 
     def _del_file(self, file: File):
         self._minio.remove_object(self._bucket, file.path)
 
     def _del_files(self, files: Iterable[File]):
-        for error in self._minio.remove_objects(
-            self._bucket, (DeleteObject(file.path) for file in files)
-        ):
+        for error in self._minio.remove_objects(self._bucket, (DeleteObject(file.path) for file in files)):
             raise error

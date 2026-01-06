@@ -1,8 +1,10 @@
 from functools import lru_cache
 from posixpath import sep
 
-from .filefilter import PathPrefixFileFilter, filter
-from .filetransformer import PathPrefixFileTransformer, transformer
+from .filefilter import PathPrefixFileFilter
+from .filefilter import filter
+from .filetransformer import PathPrefixFileTransformer
+from .filetransformer import transformer
 from .utils import TStorage
 
 
@@ -10,9 +12,7 @@ from .utils import TStorage
 @lru_cache
 def cwd(storage: type[TStorage], dir: str) -> type[TStorage]:
     extension_kwargs = {"path_prefix": dir + sep}
-    storage_cwd = transformer(
-        filter(storage, PathPrefixFileFilter), PathPrefixFileTransformer
-    )
+    storage_cwd = transformer(filter(storage, PathPrefixFileFilter), PathPrefixFileTransformer)
     # noinspection PyTypeChecker
     return type(
         f"{storage.__name__}_CWD",
@@ -23,6 +23,6 @@ def cwd(storage: type[TStorage], dir: str) -> type[TStorage]:
                 **kwargs,
                 filter_kwargs=extension_kwargs,
                 transformer_kwargs=extension_kwargs,
-            )
+            ),
         },
     )

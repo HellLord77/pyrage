@@ -1,6 +1,7 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
+from abc import abstractmethod
+from collections.abc import Iterable
 from itertools import filterfalse
-from typing import Iterable
 
 from ....utils import File
 

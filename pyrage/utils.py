@@ -1,17 +1,26 @@
 from __future__ import annotations
 
 from collections import deque
+from collections.abc import Callable
+from collections.abc import Iterable
 from io import DEFAULT_BUFFER_SIZE
 from itertools import islice
-from os import SEEK_CUR, SEEK_END, SEEK_SET
+from os import SEEK_CUR
+from os import SEEK_END
+from os import SEEK_SET
 from posixpath import sep
 from re import compile
 from tempfile import TemporaryFile
-from typing import Any, Callable, Iterable, NamedTuple, Optional, Protocol, TypeVar
+from typing import Any
+from typing import NamedTuple
+from typing import Protocol
+from typing import TypeVar
+from warnings import deprecated
 from zlib import crc32
 
 from iterableio import open_iterable
-from requests import Response, Session
+from requests import Response
+from requests import Session
 
 T = TypeVar("T")
 
@@ -28,7 +37,7 @@ class Hash(Protocol):
 
 
 class CRC32Hash(Hash):
-    def __init__(self, data: bytes = b"", *, value: Optional[int] = None):
+    def __init__(self, data: bytes = b"", *, value: int | None = None):
         if value is None:
             value = crc32(data)
         self._hash = value
@@ -62,6 +71,7 @@ def ReadableIterator(iterable: Iterable[bytes]) -> Readable:
     return open_iterable(iterable, "rb")
 
 
+@deprecated("python-httpfile")
 # noinspection PyPep8Naming
 def ReadableResponse(response: Response) -> Readable:
     response.raise_for_status()
@@ -81,7 +91,7 @@ class Seekable(Protocol):
     def tell(self) -> int:
         return self.seek(0, SEEK_CUR)
 
-    def truncate(self, size: Optional[int] = None) -> int:
+    def truncate(self, size: int | None = None) -> int:
         raise NotImplementedError
 
 
@@ -95,12 +105,10 @@ class SeekableReadable(ReadableSeekable):
         self._buffer = TemporaryFile()
         self._readable = readable
 
-    def _fill(self, position: Optional[int] = None) -> int:
+    def _fill(self, position: int | None = None) -> int:
         self._buffer.seek(0, SEEK_END)
         length = self._buffer.tell()
-        while (position is None or length < position) and (
-            buffer := self._readable.read(DEFAULT_BUFFER_SIZE)
-        ):
+        while (position is None or length < position) and (buffer := self._readable.read(DEFAULT_BUFFER_SIZE)):
             self._buffer.write(buffer)
             length += len(buffer)
         return length
@@ -138,7 +146,7 @@ class Writable(Protocol):
     def write(self, data: bytes):
         pass
 
-    def truncate(self, size: Optional[int] = None) -> int:
+    def truncate(self, size: int | None = None) -> int:
         raise NotImplementedError
 
 
@@ -180,14 +188,14 @@ class Stat(Protocol):
 
 class File(NamedTuple):
     path: str
-    size: Optional[int] = None
-    mtime: Optional[float] = None
-    atime: Optional[float] = None
-    ctime: Optional[float] = None
-    crc32: Optional[str] = None
-    md5: Optional[str] = None
-    sha1: Optional[str] = None
-    sha256: Optional[str] = None
+    size: int | None = None
+    mtime: float | None = None
+    atime: float | None = None
+    ctime: float | None = None
+    crc32: str | None = None
+    md5: str | None = None
+    sha1: str | None = None
+    sha256: str | None = None
 
     _PAT_FLOAT = compile(r"\d+\.\d+")
 
@@ -208,16 +216,14 @@ class File(NamedTuple):
         return not self == other
 
     def encode(self) -> str:
-        return ",".join(
-            "" if value is None else str(value) for value in islice(self, 1, None)
-        )
+        return ",".join("" if value is None else str(value) for value in islice(self, 1, None))
 
     @classmethod
     def decode(cls, path: str, values: str) -> File:
         return cls(path, *map(cls._decode_value, values.split(",")))
 
     @classmethod
-    def _decode_value(cls, value: str) -> Optional[int | float | str]:
+    def _decode_value(cls, value: str) -> int | float | str | None:
         if value == "":
             value = None
         elif value.isdigit():
@@ -227,12 +233,9 @@ class File(NamedTuple):
         return value
 
     @staticmethod
-    def get_stat(stat: Stat) -> dict[str, Optional[int | float]]:
+    def get_stat(stat: Stat) -> dict[str, int | float | None]:
         # noinspection PyUnresolvedReferences
-        return {
-            field.removeprefix("st_"): getattr(stat, field, None)
-            for field in Stat.__protocol_attrs__
-        }
+        return {field.removeprefix("st_"): getattr(stat, field, None) for field in Stat.__protocol_attrs__}
 
 
 def is_seekable(obj: Any) -> bool:
@@ -255,7 +258,7 @@ def iter_join(separator: T, iterable: Iterable[T]) -> Iterable[T]:
         yield item
 
 
-def consume(iterator, n: Optional[int] = None):
+def consume(iterator, n: int | None = None):
     if n is None:
         deque(iterator, maxlen=0)
     else:

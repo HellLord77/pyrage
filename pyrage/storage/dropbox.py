@@ -1,10 +1,13 @@
-from posixpath import join, relpath
-from typing import Iterable
+from collections.abc import Iterable
+from posixpath import join
+from posixpath import relpath
 
 from dropbox import Dropbox
 from dropbox.files import FileMetadata
 
-from ..utils import File, Readable, ReadableResponse
+from ..utils import File
+from ..utils import Readable
+from ..utils import ReadableResponse
 from . import Storage
 
 
@@ -15,16 +18,12 @@ class DropboxStorage(Storage):
         super().__init__()
 
     def _generate_file_list(self) -> Iterable[File]:
-        for entry in self._dropbox.files_list_folder(
-            self._cwd * (self._cwd != "/"), True
-        ).entries:
+        for entry in self._dropbox.files_list_folder(self._cwd * (self._cwd != "/"), True).entries:
             if isinstance(entry, FileMetadata):
                 yield File(relpath(entry.path_display, self._cwd), size=entry.size)
 
     def _get_file(self, file: File) -> Readable:
-        return ReadableResponse(
-            self._dropbox.files_download(join(self._cwd, file.path))[1]
-        )
+        return ReadableResponse(self._dropbox.files_download(join(self._cwd, file.path))[1])
 
     def _set_file(self, file: File, readable: Readable):
         self._dropbox.files_upload(readable.read(), join(self._cwd, file.path))

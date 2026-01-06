@@ -1,9 +1,13 @@
-from base64 import urlsafe_b64decode, urlsafe_b64encode
-from os import makedirs, remove, walk
-from os.path import exists, join
+from base64 import urlsafe_b64decode
+from base64 import urlsafe_b64encode
+from collections.abc import Iterator
+from os import makedirs
+from os import remove
+from os import walk
+from os.path import exists
+from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
-from typing import Iterator, Optional
 
 from ....utils import File
 from . import FileListMapping
@@ -18,7 +22,7 @@ def _get_path(key: str) -> str:
 
 
 class LocalFileListMapping(FileListMapping):
-    def __init__(self, path: Optional[str] = None):
+    def __init__(self, path: str | None = None):
         if path is None:
             path = mkdtemp()
         self._path = path

@@ -1,11 +1,14 @@
+from collections.abc import Iterable
 from http import HTTPStatus
 from itertools import compress
-from typing import Iterable
-
-from requests import Session, HTTPError
-
 from re import compile
-from ..utils import File, Readable, ReadableResponse
+
+from requests import HTTPError
+from requests import Session
+
+from ..utils import File
+from ..utils import Readable
+from ..utils import ReadableResponse
 from . import Storage
 
 
@@ -39,9 +42,7 @@ class LexaloffleStorage(Storage):
         "0.2.0",
     )
 
-    def __init__(
-        self, pico_8: bool = True, voxatron: bool = True, picotron: bool = True
-    ):
+    def __init__(self, pico_8: bool = True, voxatron: bool = True, picotron: bool = True):
         self._session = Session()
         self._pico_8 = pico_8
         self._voxatron = voxatron
@@ -78,17 +79,13 @@ class LexaloffleStorage(Storage):
                 for version in self._VOXATRON_VERSIONS:
                     yield from self._files(project, version)
             else:
-                response = self._session.get(
-                    f"https://www.lexaloffle.com/dl/docs/{project}_changelog.txt"
-                )
+                response = self._session.get(f"https://www.lexaloffle.com/dl/docs/{project}_changelog.txt")
                 response.raise_for_status()
                 for match in self._PAT_VERSION.finditer(response.text):
                     yield from self._files(project, match.group("ver"))
 
     def _get_file(self, file: File) -> Readable:
-        return ReadableResponse(
-            self._session.get(f"https://www.lexaloffle.com/dl/{file.path}", stream=True)
-        )
+        return ReadableResponse(self._session.get(f"https://www.lexaloffle.com/dl/{file.path}", stream=True))
 
     def _set_file(self, file: File, readable: Readable):
         raise NotImplementedError

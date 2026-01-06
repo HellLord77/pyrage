@@ -1,9 +1,13 @@
+from collections.abc import Iterator
 from itertools import starmap
-from typing import Iterator
 
-from msgpack import Packer, Unpacker, pack, unpack
+from msgpack import Packer
+from msgpack import Unpacker
+from msgpack import pack
+from msgpack import unpack
 
-from ....utils import File, consume
+from ....utils import File
+from ....utils import consume
 from . import FileListCache
 
 

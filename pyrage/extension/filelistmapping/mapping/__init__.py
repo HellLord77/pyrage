@@ -1,11 +1,11 @@
 from abc import ABCMeta
-from typing import MutableMapping, Optional
+from collections.abc import MutableMapping
 
 from ....utils import File
 
 
 class FileListMapping(MutableMapping[str, File], metaclass=ABCMeta):
-    def __init__(self, _: Optional[str] = None):
+    def __init__(self, _: str | None = None):
         self.clear()
 
     def __del__(self):

@@ -10,9 +10,7 @@ from .utils import StorageCache
 
 
 @lru_cache
-def cache(
-    storage: type[TStorage], file_list_cache: type[FileListCache] = JSONFileListCache
-) -> type[TStorage]:
+def cache(storage: type[TStorage], file_list_cache: type[FileListCache] = JSONFileListCache) -> type[TStorage]:
     # noinspection PyTypeChecker
     return type(
         f"{storage.__name__}_{file_list_cache.__name__}",

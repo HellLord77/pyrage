@@ -1,3 +1,4 @@
+from .storage.alist import AListStorage as AListStorage
 from .storage.ddl import DDLStorage as DDLStorage
 from .storage.dropbox import DropboxStorage as DropboxStorage
 from .storage.git import GitStorage as GitStorage
@@ -12,6 +13,7 @@ from .storage.local import LocalStorage as LocalStorage
 from .storage.minio import MinIOStorage as MinIOStorage
 from .storage.myrient import MyrientStorage as MyrientStorage
 from .storage.pokemontcgimages import PokemonTCGImagesStorage as PokemonTCGImagesStorage
+from .storage.romm import RomMStorage as RomMStorage
 from .storage.s3 import S3Storage as S3Storage
 from .storage.sftp import SFTPStorage as SFTPStorage
 from .storage.steam import SteamStorage as SteamStorage
@@ -19,4 +21,3 @@ from .storage.tar import TarStorage as TarStorage
 from .storage.tcgdexassets import TCGDexAssetsStorage as TCGDexAssetsStorage
 from .storage.webdav import WebDAVStorage as WebDAVStorage
 from .storage.zip import ZipStorage as ZipStorage
-from .storage.romm import RomMStorage as RomMStorage

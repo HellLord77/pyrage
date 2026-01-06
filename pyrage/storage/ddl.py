@@ -1,9 +1,11 @@
-from typing import Iterable, Optional
+from collections.abc import Iterable
 from urllib.parse import urlparse
 
 from requests import Session
 
-from ..utils import File, Readable, ReadableResponse
+from ..utils import File
+from ..utils import Readable
+from ..utils import ReadableResponse
 from . import Storage
 
 
@@ -11,12 +13,12 @@ class DDLStorage(Storage):
     def __init__(
         self,
         url: str,
-        name: Optional[str] = None,
-        size: Optional[int] = None,
-        crc32: Optional[str] = None,
-        md5: Optional[str] = None,
-        sha1: Optional[str] = None,
-        sha256: Optional[str] = None,
+        name: str | None = None,
+        size: int | None = None,
+        crc32: str | None = None,
+        md5: str | None = None,
+        sha1: str | None = None,
+        sha256: str | None = None,
     ):
         self._url = url
         self._name = name

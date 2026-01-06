@@ -1,15 +1,18 @@
+from collections.abc import Iterable
 from datetime import datetime
 from shutil import copyfileobj
 from threading import Lock
-from typing import BinaryIO, Iterable, Optional
+from typing import BinaryIO
 from zipfile import ZipFile
 
-from ..utils import CRC32Hash, File, Readable
+from ..utils import CRC32Hash
+from ..utils import File
+from ..utils import Readable
 from . import Storage
 
 
 class ZipStorage(Storage):
-    def __init__(self, file: str | BinaryIO, pwd: Optional[bytes] = None):
+    def __init__(self, file: str | BinaryIO, pwd: bytes | None = None):
         self._zip = ZipFile(file, "a")
         self._zip.setpassword(pwd)
         self._lock = Lock()

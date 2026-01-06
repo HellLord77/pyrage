@@ -1,25 +1,29 @@
+from collections.abc import Iterable
 from http import HTTPStatus
-from typing import Iterable, Optional
 from urllib.parse import urlparse
 
-from pokemontcgsdk import Card, RestClient, Set, querybuilder
-from requests import HTTPError, Session
+from pokemontcgsdk import Card
+from pokemontcgsdk import RestClient
+from pokemontcgsdk import Set
+from pokemontcgsdk import querybuilder
+from requests import HTTPError
+from requests import Session
 
 from ..config import POKEMON_TCG_EXTEND_GENERATE
-from ..utils import File, Readable, ReadableResponse
+from ..utils import File
+from ..utils import Readable
+from ..utils import ReadableResponse
 from . import Storage
 
 
 class PokemonTCGImagesStorage(Storage):
-    def __init__(
-        self, api_key: Optional[str] = None, endpoint: str = querybuilder.__endpoint__
-    ):
+    def __init__(self, api_key: str | None = None, endpoint: str = querybuilder.__endpoint__):
         RestClient.configure(api_key)
         querybuilder.__endpoint__ = endpoint
         self._session = Session()
         super().__init__()
 
-    def _file(self, url: str) -> Optional[File]:
+    def _file(self, url: str) -> File | None:
         path = urlparse(url).path.lstrip("/")
         if POKEMON_TCG_EXTEND_GENERATE:
             response = self._session.head(url)
@@ -35,32 +39,12 @@ class PokemonTCGImagesStorage(Storage):
 
     def _generate_file_list(self) -> Iterable[File]:
         for set_ in Set.all():
-            yield from filter(
-                None,
-                map(
-                    self._file,
-                    (
-                        set_.images.symbol,
-                        set_.images.logo,
-                    ),
-                ),
-            )
+            yield from filter(None, map(self._file, (set_.images.symbol, set_.images.logo)))
         for card in Card.all():
-            yield from filter(
-                None,
-                map(
-                    self._file,
-                    (
-                        card.images.small,
-                        card.images.large,
-                    ),
-                ),
-            )
+            yield from filter(None, map(self._file, (card.images.small, card.images.large)))
 
     def _get_file(self, file: File) -> Readable:
-        return ReadableResponse(
-            self._session.get(f"https://images.pokemontcg.io/{file.path}", stream=True)
-        )
+        return ReadableResponse(self._session.get(f"https://images.pokemontcg.io/{file.path}", stream=True))
 
     def _set_file(self, file: File, readable: Readable):
         raise NotImplementedError

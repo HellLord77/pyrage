@@ -1,4 +1,5 @@
-from typing import Iterable, Iterator
+from collections.abc import Iterable
+from collections.abc import Iterator
 
 from google.protobuf.json_format import MessageToDict
 
@@ -24,6 +25,4 @@ class ProtoFileListCache(FileListCache):
     def _load(self) -> Iterator[File]:  # FIXME type(size) = str
         with open(self.path, "rb") as cache:
             files = Files.FromString(cache.read())
-        return (
-            File(path=path, **MessageToDict(file)) for path, file in files.files.items()
-        )
+        return (File(path=path, **MessageToDict(file)) for path, file in files.files.items())

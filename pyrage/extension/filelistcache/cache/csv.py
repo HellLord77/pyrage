@@ -1,6 +1,8 @@
-from csv import QUOTE_STRINGS, reader, writer
+from collections.abc import Iterator
+from csv import QUOTE_STRINGS
+from csv import reader
+from csv import writer
 from itertools import starmap
-from typing import Iterator
 
 from ....utils import File
 from . import FileListCache
@@ -14,5 +16,5 @@ class CSVFileListCache(FileListCache):
             writer(cache, quoting=QUOTE_STRINGS).writerows(files)
 
     def _load(self) -> Iterator[File]:  # FIXME type(size) = float
-        with open(self.path, "r", encoding="utf-8") as cache:
+        with open(self.path, encoding="utf-8") as cache:
             yield from starmap(File, reader(cache, quoting=QUOTE_STRINGS))

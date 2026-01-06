@@ -1,15 +1,19 @@
-from typing import Iterable, Iterator
+from collections.abc import Iterable
+from collections.abc import Iterator
 
 from flatbuffers import Builder
 
-from .....utils import File, consume
+from .....utils import File
+from .....utils import consume
 from .. import FileListCache
 from .gen import File as File_
 from .gen.File import End as EndFile
 from .gen.File import Start as StartFile
-from .gen.Files import AddFiles, Files, StartFilesVector
+from .gen.Files import AddFiles
 from .gen.Files import End as EndFiles
+from .gen.Files import Files
 from .gen.Files import Start as StartFiles
+from .gen.Files import StartFilesVector
 
 
 def _get_file(builder: Builder, file: File) -> int:

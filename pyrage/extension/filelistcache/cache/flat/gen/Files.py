@@ -8,7 +8,7 @@ from flatbuffers.compat import import_numpy
 np = import_numpy()
 
 
-class Files(object):
+class Files:
     __slots__ = ["_tab"]
 
     @classmethod
@@ -63,9 +63,7 @@ def Start(builder):
 
 
 def FilesAddFiles(builder, files):
-    builder.PrependUOffsetTRelativeSlot(
-        0, flatbuffers.number_types.UOffsetTFlags.py_type(files), 0
-    )
+    builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(files), 0)
 
 
 def AddFiles(builder, files):

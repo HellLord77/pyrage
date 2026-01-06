@@ -1,12 +1,12 @@
+from collections.abc import Iterator
 from sqlite3 import connect
-from typing import Iterator, Optional
 
 from ....utils import File
 from . import FileListMapping
 
 
 class SqliteFileListMapping(FileListMapping):
-    def __init__(self, database: Optional[str] = None):
+    def __init__(self, database: str | None = None):
         if database is None:
             database = ":memory:"
         self._mapping = connect(database)
@@ -23,7 +23,7 @@ class SqliteFileListMapping(FileListMapping):
                 sha1 VARCHAR(40),
                 sha256 VARCHAR(64)
             );
-            """
+            """,
         )
         super().__init__()
 
@@ -34,14 +34,14 @@ class SqliteFileListMapping(FileListMapping):
                 SELECT EXISTS(SELECT 1 FROM _ WHERE path = ?);
                 """,
                 (key,),
-            ).fetchone()[0]
+            ).fetchone()[0],
         )
 
     def __len__(self):
         return self._mapping.execute(
             """
             SELECT COUNT(*) FROM _;
-            """
+            """,
         ).fetchone()[0]
 
     def __iter__(self) -> Iterator[str]:
@@ -50,7 +50,7 @@ class SqliteFileListMapping(FileListMapping):
             for row in self._mapping.execute(
                 """
                 SELECT path FROM _;
-                """
+                """,
             )
         )
 
@@ -88,5 +88,5 @@ class SqliteFileListMapping(FileListMapping):
         self._mapping.execute(
             """
             DELETE FROM _;
-            """
+            """,
         )

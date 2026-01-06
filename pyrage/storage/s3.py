@@ -1,11 +1,14 @@
+from collections.abc import Iterable
 from itertools import batched
-from typing import Iterable, Optional
 
 from boto3 import client
 from botocore import UNSIGNED
 from botocore.config import Config
 
-from ..utils import File, Readable, SeekableReadable, is_seekable
+from ..utils import File
+from ..utils import Readable
+from ..utils import SeekableReadable
+from ..utils import is_seekable
 from . import Storage
 
 
@@ -13,9 +16,9 @@ class S3Storage(Storage):
     def __init__(
         self,
         bucket: str,
-        aws_access_key_id: Optional[str] = None,
-        aws_secret_access_key: Optional[str] = None,
-        endpoint_url: Optional[str] = None,
+        aws_access_key_id: str | None = None,
+        aws_secret_access_key: str | None = None,
+        endpoint_url: str | None = None,
     ):
         config = None
         if aws_secret_access_key is None or aws_access_key_id is None:
@@ -31,9 +34,7 @@ class S3Storage(Storage):
         super().__init__()
 
     def _generate_file_list(self) -> Iterable[File]:
-        for response in self._s3.get_paginator("list_objects_v2").paginate(
-            Bucket=self._bucket
-        ):
+        for response in self._s3.get_paginator("list_objects_v2").paginate(Bucket=self._bucket):
             try:
                 contents = response["Contents"]
             except KeyError:
@@ -43,11 +44,7 @@ class S3Storage(Storage):
                     content["Key"],
                     size=content["Size"],
                     mtime=content["LastModified"].timestamp(),
-                    md5=(
-                        etag
-                        if len(etag := content["ETag"].replace('"', "")) == 32
-                        else None
-                    ),
+                    md5=(etag if len(etag := content["ETag"].replace('"', "")) == 32 else None),
                 )
 
     def _get_file(self, file: File) -> Readable:

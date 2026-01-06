@@ -1,11 +1,17 @@
-from ntpath import relpath, sep
+from collections.abc import Iterable
+from ntpath import relpath
+from ntpath import sep
 from pathlib import PureWindowsPath
 from shutil import copyfileobj
-from typing import Iterable, Optional
 
-from smbclient import makedirs, open_file, register_session, remove, scandir
+from smbclient import makedirs
+from smbclient import open_file
+from smbclient import register_session
+from smbclient import remove
+from smbclient import scandir
 
-from ..utils import File, Readable
+from ..utils import File
+from ..utils import Readable
 from . import Storage
 
 
@@ -15,8 +21,8 @@ class SMBStorage(Storage):
         server: str,
         share: str,
         port: int = 445,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
+        username: str | None = None,
+        password: str | None = None,
     ):
         register_session(server, username, password, port)
         self._path = PureWindowsPath(f"{sep}{sep}{server}{sep}", share)
@@ -29,9 +35,7 @@ class SMBStorage(Storage):
                 if dir_.is_dir():
                     paths.append(dir_.path)
                 else:
-                    yield File(
-                        relpath(dir_.path, self._path), **File.get_stat(dir_.stat())
-                    )
+                    yield File(relpath(dir_.path, self._path), **File.get_stat(dir_.stat()))
 
     def _get_file(self, file: File) -> Readable:
         return open_file(self._path / file.path, "rb")

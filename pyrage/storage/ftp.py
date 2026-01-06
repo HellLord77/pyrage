@@ -1,12 +1,13 @@
+from collections.abc import Iterable
 from ftplib import FTP
 from pathlib import PurePosixPath
 from shutil import copyfileobj
-from typing import Iterable, Optional
 
 from ftputil import FTPHost
 
 from ..config import FTP_INCLUDE_HIDDEN
-from ..utils import File, Readable
+from ..utils import File
+from ..utils import Readable
 from . import Storage
 
 
@@ -14,8 +15,8 @@ class _FTPPort(FTP):
     def __init__(
         self,
         host: str,
-        user: Optional[str] = None,
-        passwd: Optional[str] = None,
+        user: str | None = None,
+        passwd: str | None = None,
         port: int = 0,
     ):
         super().__init__()
@@ -28,8 +29,8 @@ class FTPStorage(Storage):
         self,
         host: str,
         port: int = 0,
-        user: Optional[str] = None,
-        passwd: Optional[str] = None,
+        user: str | None = None,
+        passwd: str | None = None,
         cwd: str = ".",
     ):
         self._ftp = FTPHost(host, user, passwd, port, session_factory=_FTPPort)

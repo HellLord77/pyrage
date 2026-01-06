@@ -1,11 +1,15 @@
+from collections.abc import Iterable
 from email.utils import parsedate_to_datetime
-from typing import Iterable
 
 from bs4 import BeautifulSoup
 from requests import RequestException
 
-from ..config import MYRIENT_EXTEND_GENERATE, MYRIENT_RETRY_EXTEND_GENERATE
-from ..utils import DefragmentedSession, File, Readable, ReadableResponse
+from ..config import MYRIENT_EXTEND_GENERATE
+from ..config import MYRIENT_RETRY_EXTEND_GENERATE
+from ..utils import DefragmentedSession
+from ..utils import File
+from ..utils import Readable
+from ..utils import ReadableResponse
 from . import Storage
 
 
@@ -21,9 +25,7 @@ class MyrientStorage(Storage):
         if MYRIENT_EXTEND_GENERATE:
             while True:
                 try:
-                    response = self._session.head(
-                        f"{self._BASE_URL}{self._cwd}{path}", allow_redirects=True
-                    )
+                    response = self._session.head(f"{self._BASE_URL}{self._cwd}{path}", allow_redirects=True)
                     response.raise_for_status()
                 except RequestException:
                     if not MYRIENT_RETRY_EXTEND_GENERATE:
@@ -33,12 +35,9 @@ class MyrientStorage(Storage):
             return File(
                 path,
                 size=int(response.headers["Content-Length"]),
-                mtime=parsedate_to_datetime(
-                    response.headers["Last-Modified"]
-                ).timestamp(),
+                mtime=parsedate_to_datetime(response.headers["Last-Modified"]).timestamp(),
             )
-        else:
-            return File(path)
+        return File(path)
 
     def _generate_file_list(self) -> Iterable[File]:
         paths = [""]
@@ -56,9 +55,7 @@ class MyrientStorage(Storage):
                     yield self._file(path)
 
     def _get_file(self, file: File) -> Readable:
-        return ReadableResponse(
-            self._session.get(f"{self._BASE_URL}{self._cwd}{file.path}", stream=True)
-        )
+        return ReadableResponse(self._session.get(f"{self._BASE_URL}{self._cwd}{file.path}", stream=True))
 
     def _set_file(self, file: File, readable: Readable):
         raise NotImplementedError

@@ -1,12 +1,18 @@
-from posixpath import dirname, join, relpath, sep
+from collections.abc import Iterable
+from posixpath import dirname
+from posixpath import join
+from posixpath import relpath
+from posixpath import sep
 from stat import S_ISDIR
-from typing import Iterable, Optional
 
-from paramiko import AutoAddPolicy, SFTPClient, SSHClient
+from paramiko import AutoAddPolicy
+from paramiko import SFTPClient
+from paramiko import SSHClient
 from paramiko.config import SSH_PORT
 
 from ..config import SFTP_AUTO_ADD
-from ..utils import File, Readable
+from ..utils import File
+from ..utils import Readable
 from . import Storage
 
 
@@ -24,8 +30,8 @@ class SFTPStorage(Storage):
         self,
         hostname: str,
         port: int = SSH_PORT,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
+        username: str | None = None,
+        password: str | None = None,
         cwd: str = ".",
     ):
         client = SSHClient()

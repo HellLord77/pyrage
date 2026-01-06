@@ -1,26 +1,22 @@
-from typing import Iterable, Optional
+from collections.abc import Iterable
 
 from requests import Session
 
-from ..utils import File, Readable, ReadableResponse
+from ..utils import File
+from ..utils import Readable
+from ..utils import ReadableResponse
 from . import Storage
 
 
 class KaraokeMugenStorage(Storage):
-    def __init__(
-        self, collections: Optional[Iterable[str]] = None, repository: str = "kara.moe"
-    ):
+    def __init__(self, collections: Iterable[str] | None = None, repository: str = "kara.moe"):
         self._repository = f"https://{repository}"
         self._session = Session()
         if collections is None:
             response = self._session.get(f"{self._repository}/api/karas/repository")
             response.raise_for_status()
             collections = (
-                collection
-                for collection, enable in response.json()["Manifest"][
-                    "defaultCollections"
-                ].items()
-                if enable
+                collection for collection, enable in response.json()["Manifest"]["defaultCollections"].items() if enable
             )
         self._collections = list(collections)
         super().__init__()
@@ -35,11 +31,7 @@ class KaraokeMugenStorage(Storage):
             yield File(kara["mediafile"], size=kara["mediasize"])
 
     def _get_file(self, file: File) -> Readable:
-        return ReadableResponse(
-            self._session.get(
-                f"{self._repository}/downloads/medias/{file.path}", stream=True
-            )
-        )
+        return ReadableResponse(self._session.get(f"{self._repository}/downloads/medias/{file.path}", stream=True))
 
     def _set_file(self, file: File, readable: Readable):
         raise NotImplementedError

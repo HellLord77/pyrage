@@ -1,22 +1,19 @@
+from collections.abc import Iterable
 from functools import lru_cache
-from pathlib import Path, PureWindowsPath
-from typing import Iterable, Optional
+from pathlib import Path
+from pathlib import PureWindowsPath
 
 from steam.client import SteamClient
 from steam.client.cdn import CDNClient
 
 from ..config import STEAM_CACHE_MANIFESTS
-from ..utils import File, Readable
+from ..utils import File
+from ..utils import Readable
 from . import Storage
 
 
 class SteamStorage(Storage):
-    def __init__(
-        self,
-        app_id: int,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
-    ):
+    def __init__(self, app_id: int, username: str | None = None, password: str | None = None):
         steam = SteamClient()
         if username is None:
             steam.anonymous_login()

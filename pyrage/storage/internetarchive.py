@@ -1,9 +1,12 @@
-from typing import Iterable, Optional
+from collections.abc import Iterable
 
 from internetarchive import File as File_
-from internetarchive import get_item, upload
+from internetarchive import get_item
+from internetarchive import upload
 
-from ..utils import File, Readable, ReadableResponse
+from ..utils import File
+from ..utils import Readable
+from ..utils import ReadableResponse
 from . import Storage
 
 
@@ -11,12 +14,10 @@ class InternetArchiveStorage(Storage):
     def __init__(
         self,
         identifier: str,
-        access_key: Optional[str] = None,
-        secret_key: Optional[str] = None,
+        access_key: str | None = None,
+        secret_key: str | None = None,
     ):
-        self._item = get_item(
-            identifier, {"s3": {"access": access_key, "secret": secret_key}}
-        )
+        self._item = get_item(identifier, {"s3": {"access": access_key, "secret": secret_key}})
         super().__init__()
 
     def _generate_file_list(self) -> Iterable[File]:
@@ -33,9 +34,7 @@ class InternetArchiveStorage(Storage):
 
     def _get_file(self, file: File) -> Readable:
         # noinspection PyTypeChecker
-        return ReadableResponse(
-            File_(self._item, file.path).download(return_responses=True)
-        )
+        return ReadableResponse(File_(self._item, file.path).download(return_responses=True))
 
     def _set_file(self, file: File, readable: Readable):
         upload(self._item.identifier, {file.path: readable})

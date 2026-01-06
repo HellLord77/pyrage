@@ -1,9 +1,14 @@
-from typing import Iterable, Optional
+from collections.abc import Iterable
 
-from wayback import CdxRecord, WaybackClient
+from wayback import CdxRecord
+from wayback import WaybackClient
 
-from ..config import WAYBACK_EXTEND_GENERATE, WAYBACK_FLAT_PATH
-from ..utils import File, Readable, ReadableResponse, lsplit
+from ..config import WAYBACK_EXTEND_GENERATE
+from ..config import WAYBACK_FLAT_PATH
+from ..utils import File
+from ..utils import Readable
+from ..utils import ReadableResponse
+from ..utils import lsplit
 from . import Storage
 
 
@@ -12,7 +17,7 @@ class WaybackMachineStorage(Storage):
         self,
         url: str,
         filter_field: str | list[str] | tuple[str, ...] = "!statuscode:[45]..",
-        collapse: Optional[str] = "urlkey",
+        collapse: str | None = "urlkey",
     ):
         self._url = url
         self._filter_field = filter_field
@@ -29,8 +34,7 @@ class WaybackMachineStorage(Storage):
             response = self._client.session.head(record.raw_url, allow_redirects=True)
             response.raise_for_status()
             return File(path, size=int(response.headers["Content-Length"]), mtime=mtime)
-        else:
-            return File(path, mtime=mtime)
+        return File(path, mtime=mtime)
 
     def _generate_file_list(self) -> Iterable[File]:
         return map(
@@ -49,12 +53,7 @@ class WaybackMachineStorage(Storage):
         else:
             timestamp, path = lsplit(file.path)
             url = (f"https://web.archive.org/web/{timestamp}id_/{self._url}{path}",)
-        return ReadableResponse(
-            self._client.session.get(
-                url,
-                stream=True,
-            )
-        )
+        return ReadableResponse(self._client.session.get(url, stream=True))
 
     def _set_file(self, file: File, readable: Readable):
         raise NotImplementedError
