@@ -16,7 +16,6 @@ from .storage.pokemontcgimages import PokemonTCGImagesStorage as PokemonTCGImage
 from .storage.romm import RomMStorage as RomMStorage
 from .storage.s3 import S3Storage as S3Storage
 from .storage.sftp import SFTPStorage as SFTPStorage
-from .storage.steam import SteamStorage as SteamStorage
 from .storage.tar import TarStorage as TarStorage
 from .storage.tcgdexassets import TCGDexAssetsStorage as TCGDexAssetsStorage
 from .storage.webdav import WebDAVStorage as WebDAVStorage

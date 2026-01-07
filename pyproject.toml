@@ -16,7 +16,7 @@ dev = [
   "types-tqdm",
 ]
 
-storage-alist = ["h2", "python-alist", "requests"]
+storage-alist = ["h2", "python-alist"]
 storage-ddl = ["requests"]
 storage-dropbox = ["dropbox"]
 storage-git = ["GitPython"]
@@ -33,10 +33,6 @@ storage-myrient = ["beautifulsoup4", "requests"]
 storage-pokemontcgimages = ["pokemontcgsdk", "requests"]
 storage-s3 = ["boto3"]
 storage-sftf = ["paramiko"]
-storage-steam = [
-  "steam[client] @ git+https://github.com/solsticegamestudios/steam.git@30437f32e625b52c6cee34dac5eb14652447379f",
-  "zstandard",
-]
 storage-tar = []
 storage-tcgdexassets = ["requests", "tcgdex-sdk"]
 storage-webdav = ["webdavclient3"]
@@ -59,14 +55,19 @@ extnesion-filelistmapping-sqlite = []
 
 extension-filetransformer = []
 
-test-storage-docker = ["docker"]
-test-storage-ftp = ["ftputil"]
-test-storage-mongo = ["pymongo"]
-test-storage-qbtorrent = ["qbittorrent-api"]
-test-storage-romm = ["requests", "requests-toolbelt"]
-test-storage-smb = ["smbprotocol"]
-test-storage-waybackmachine = ["wayback"]
-test-extension-filelistcache-ini = []
+storage-docker = ["docker"]
+storage-ftp = ["ftputil"]
+storage-mongo = ["pymongo"]
+storage-qbtorrent = ["qbittorrent-api"]
+storage-romm = ["requests", "requests-toolbelt"]
+storage-smb = ["smbprotocol"]
+storage-sophon = ["HoyoSophonDL", "python-magic-bin"]
+# storage-steam = [
+#   "steam[client] @ git+https://github.com/solsticegamestudios/steam.git@30437f32e625b52c6cee34dac5eb14652447379f",
+#   "zstandard",
+# ]
+storage-waybackmachine = ["wayback"]
+extension-filelistcache-ini = []
 
 [tool.uv]
 default-groups = "all"
