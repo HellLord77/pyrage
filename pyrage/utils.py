@@ -72,7 +72,10 @@ def ReadableIterator(iterable: Iterable[bytes]) -> Readable:
 def ReadableResponse(response: Response) -> Readable:
     response.raise_for_status()
     response.raw.decode_content = True
-    response.raw.len = int(response.headers["Content-Length"])
+    try:
+        response.raw.len = int(response.headers["Content-Length"])
+    except (KeyError, ValueError):
+        pass
     return response.raw
 
 

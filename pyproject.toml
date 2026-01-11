@@ -5,36 +5,33 @@ requires-python = "~=3.14.0"
 dependencies = ["iterable-io", "tqdm"]
 
 [dependency-groups]
-dev = [
-  "mypy",
-  "ruff",
+dev = ["mypy", "ruff", { include-group = "group-types" }]
 
-  "types-requests",
-  "types-tqdm",
-  "types-boto3",
-  "types-redis",
-  "types-tqdm",
-]
+group-types = ["types-boto3", "types-redis", "types-requests", "types-tqdm"]
+group-requests = ["requests"]
 
 storage-alist = ["h2", "python-alist"]
-storage-ddl = ["requests"]
+storage-ddl = [{ include-group = "group-requests" }]
 storage-dropbox = ["dropbox"]
 storage-git = ["GitPython"]
 storage-gitea = ["py-gitea"]
-storage-github = ["PyGithub", "requests"]
+storage-github = ["PyGithub", { include-group = "group-requests" }]
 storage-gitlab = ["python-gitlab"]
 storage-internetarchive = ["internetarchive"]
-storage-karaokemugen = ["requests"]
-storage-kemono = ["requests"]
-storage-lexaloffle = ["requests"]
+storage-karaokemugen = [{ include-group = "group-requests" }]
+storage-kemono = [{ include-group = "group-requests" }]
+storage-lexaloffle = [{ include-group = "group-requests" }]
 storage-local = []
 storage-minio = ["minio"]
-storage-myrient = ["beautifulsoup4", "requests"]
-storage-pokemontcgimages = ["pokemontcgsdk", "requests"]
+storage-myrient = ["beautifulsoup4", { include-group = "group-requests" }]
+storage-pokemontcgimages = [
+  "pokemontcgsdk",
+  { include-group = "group-requests" },
+]
 storage-s3 = ["boto3"]
 storage-sftf = ["paramiko"]
 storage-tar = []
-storage-tcgdexassets = ["requests", "tcgdex-sdk"]
+storage-tcgdexassets = ["tcgdex-sdk", { include-group = "group-requests" }]
 storage-webdav = ["webdavclient3"]
 storage-zip = []
 
@@ -59,9 +56,12 @@ storage-docker = ["docker"]
 storage-ftp = ["ftputil"]
 storage-mongo = ["pymongo"]
 storage-qbtorrent = ["qbittorrent-api"]
-storage-romm = ["requests", "requests-toolbelt"]
+storage-romm = ["requests-toolbelt", { include-group = "group-requests" }]
 storage-smb = ["smbprotocol"]
 storage-sophon = ["HoyoSophonDL", "python-magic-bin"]
+storage-star-launcher = [
+  "star-launcher-sdk @ git+https://github.com/HellLord77/star-launcher-sdk.git@v0.1.0"
+]
 # storage-steam = [
 #   "steam[client] @ git+https://github.com/solsticegamestudios/steam.git@30437f32e625b52c6cee34dac5eb14652447379f",
 #   "zstandard",
