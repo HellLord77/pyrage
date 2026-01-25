@@ -2,6 +2,7 @@ from collections.abc import Iterable
 from hashlib import md5
 from hashlib import sha1
 from hashlib import sha256
+from os import PathLike
 from pathlib import Path
 from shutil import copyfileobj
 from tempfile import mkdtemp
@@ -32,7 +33,7 @@ def _get_hash(path: Path) -> dict[str, str]:
 
 
 class LocalStorage(Storage):
-    def __init__(self, path: str):
+    def __init__(self, path: str | PathLike[str]):
         self._path = Path(path).resolve(strict=True)
         super().__init__()
 

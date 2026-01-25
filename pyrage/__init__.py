@@ -1,4 +1,5 @@
 from .storage.alist import AListStorage as AListStorage
+from .storage.asar import AsarStorage as AsarStorage
 from .storage.ddl import DDLStorage as DDLStorage
 from .storage.dropbox import DropboxStorage as DropboxStorage
 from .storage.git import GitStorage as GitStorage

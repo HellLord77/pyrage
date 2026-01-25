@@ -15,6 +15,7 @@ group-types = ["types-boto3[s3]", "types-redis", "types-requests", "types-tqdm"]
 group-requests = ["requests"]
 
 storage-alist = ["h2", "python-alist"]
+storage-asar = ["asar"]
 storage-ddl = [{ include-group = "group-requests" }]
 storage-dropbox = ["dropbox"]
 storage-git = ["GitPython"]

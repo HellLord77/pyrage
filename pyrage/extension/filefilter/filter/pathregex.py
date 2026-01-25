@@ -1,4 +1,5 @@
-from re import Pattern, compile
+from re import Pattern
+from re import compile
 
 from ....utils import File
 from . import FileFilter
