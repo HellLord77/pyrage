@@ -6,6 +6,7 @@ from HoyoSophonDL import Region
 from HoyoSophonDL import config
 from HoyoSophonDL.help import decompress
 from HoyoSophonDL.structs.SophonManifest import SophonManifestProtoAsset
+from zstd import ZSTD_uncompress
 
 from ..utils import File
 from ..utils import Readable
@@ -43,7 +44,10 @@ class SophonStorage(Storage):
             content = response.content
             if len(content) != chunk.ChunkSize:
                 raise NotImplementedError
-            decompressed = decompress(content)
+            if content[:4] == b"\x28\xb5\x2f\xfd":
+                decompressed = ZSTD_uncompress(content)
+            else:
+                decompressed = decompress(content)
             if (
                 len(decompressed) != chunk.ChunkSizeDecompressed
                 or md5(decompressed).hexdigest() != chunk.ChunkDecompressedHashMd5

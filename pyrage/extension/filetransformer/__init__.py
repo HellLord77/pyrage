@@ -3,6 +3,7 @@ from functools import lru_cache
 from ..utils import TStorage
 from .transformer import FileTransformer
 from .transformer.pathprefix import PathPrefixFileTransformer as PathPrefixFileTransformer
+from .transformer.pathstream import PathStreamFileTransformer as PathStreamFileTransformer
 from .utils import StorageTransformer
 
 

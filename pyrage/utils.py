@@ -73,9 +73,11 @@ def ReadableResponse(response: Response) -> Readable:
     response.raise_for_status()
     response.raw.decode_content = True
     try:
-        response.raw.len = int(response.headers["Content-Length"])
-    except (KeyError, ValueError):
+        content_length = response.headers["Content-Length"]
+    except KeyError:
         pass
+    else:
+        response.raw.len = int(content_length)
     return response.raw
 
 

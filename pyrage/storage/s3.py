@@ -53,7 +53,6 @@ class S3Storage(Storage):
     def _set_file(self, file: File, readable: Readable):
         if not is_seekable(readable):
             readable = SeekableReadable(readable)
-        # noinspection PyTypeChecker
         self._s3.put_object(Bucket=self._bucket, Key=file.path, Body=readable)
 
     def _del_file(self, file: File):

@@ -5,6 +5,7 @@ from .filter import FileFilter
 from .filter.extension import ExtensionFileFilter as ExtensionFileFilter
 from .filter.filetype import FileTypeFileFilter as FileTypeFileFilter
 from .filter.pathprefix import PathPrefixFileFilter as PathPrefixFileFilter
+from .filter.pathregex import PathRegexFileFilter as PathRegexFileFilter
 from .utils import StorageFilter
 
 

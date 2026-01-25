@@ -2,6 +2,7 @@ from abc import ABCMeta
 from abc import abstractmethod
 from collections.abc import Iterable
 from collections.abc import Iterator
+from itertools import tee
 from os import makedirs
 from os.path import dirname
 from os.path import exists
@@ -27,10 +28,11 @@ class FileListCache(metaclass=ABCMeta):
     def _load(self) -> Iterator[File]:
         raise NotImplementedError
 
-    def generate(self, generator: Iterable[File], files: Iterable[File]) -> Iterator[File]:
+    def generate(self, generator: Iterable[File]) -> Iterator[File]:
         if exists(self.path) and getsize(self.path):
             yield from self._load()
         else:
+            generator, files = tee(generator)
             yield from generator
             makedirs(dirname(self.path), exist_ok=True)
             self._dump(files)

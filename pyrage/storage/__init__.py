@@ -1,6 +1,7 @@
 import logging
 from abc import ABCMeta
 from abc import abstractmethod
+from collections import deque
 from collections.abc import Callable
 from collections.abc import Iterable
 from collections.abc import Iterator
@@ -36,7 +37,7 @@ class Storage(metaclass=ABCMeta):
     _fetch_file_list_init: bool = False
 
     def __init__(self, *_, **__):
-        self._idents = {}
+        self._idents = deque(maxlen=STORAGE_MAX_THREADS)
         self._file_list = {}
         self._file_list_proxy = MappingProxyType(self._file_list)
 
@@ -171,9 +172,10 @@ class Storage(metaclass=ABCMeta):
         else:
             ident = get_ident()
             try:
-                position = self._idents[ident]
-            except KeyError:
-                position = self._idents[ident] = len(self._idents)
+                position = self._idents.index(ident)
+            except ValueError:
+                position = len(self._idents)
+                self._idents.append(ident)
 
         with tqdm(
             total=total,
@@ -214,7 +216,7 @@ class Storage(metaclass=ABCMeta):
         self.fetch_file_list()
         self.del_files(self)
 
-    def sync(self, *others: Storage):
+    def sync(self, *others: Storage, strict: bool = True):
         with ThreadPoolExecutor() as executor:
             futures = chain(
                 (executor.submit(self.fetch_file_list),),
@@ -227,10 +229,11 @@ class Storage(metaclass=ABCMeta):
             for rest in islice(others, index + 1, None):
                 copy_files = rest.rev_diff_file_list(copy_files)
             self.copy_files(other, tuple(self.rev_diff_file_list(copy_files)))
-        del_files = self
-        for other in others:
-            del_files = other.rev_diff_file_list(del_files, strict=False)
-        self.del_files(tuple(del_files))
+        if strict:
+            del_files = self
+            for other in others:
+                del_files = other.rev_diff_file_list(del_files, strict=False)
+            self.del_files(tuple(del_files))
 
 
 @cache

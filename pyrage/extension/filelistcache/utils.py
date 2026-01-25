@@ -14,4 +14,4 @@ class StorageCache(Storage, metaclass=ABCMeta):
         super().__init__(*args, **kwargs)
 
     def _generate_file_list(self) -> Iterable[File]:
-        return self._file_list_cache.generate(super()._generate_file_list(), self)
+        return self._file_list_cache.generate(super()._generate_file_list())

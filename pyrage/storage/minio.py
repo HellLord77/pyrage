@@ -99,7 +99,14 @@ class MinIOStorage(Storage):
 
     def _set_file(self, file: File, readable: Readable):
         # noinspection PyTypeChecker
-        self._minio.put_object(self._bucket, file.path, readable, -1, part_size=MAX_PART_SIZE)
+        self._minio.put_object(
+            self._bucket,
+            file.path,
+            readable,
+            -1 if file.size is None else file.size,
+            part_size=MAX_PART_SIZE,
+            num_parallel_uploads=1,
+        )
 
     def _del_file(self, file: File):
         self._minio.remove_object(self._bucket, file.path)
